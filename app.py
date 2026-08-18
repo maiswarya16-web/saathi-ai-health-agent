@@ -90,14 +90,21 @@ if any(word in question.lower() for word in red_flag_words):
         "Seek urgent professional medical assessment "
         "according to the applicable health protocol."
     )
-st.subheader("Saathi's Response")
-st.write(answer)
+if st.button("Ask Saathi"):
+    if question.strip():
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=question
+            )
 
-            st.subheader("Saathi's Response")
-            st.write(response.text)
+            answer = response.text
+
+            st.success("Saathi's guidance:")
+            st.write(answer)
 
         except Exception as e:
-            st.error(f"Unable to get an AI response: {e}")
+            st.error(f"Sorry, Saathi could not answer right now: {e}")
 
     else:
         st.warning("Please enter a question first.")
