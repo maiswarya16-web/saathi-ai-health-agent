@@ -21,6 +21,27 @@ api_key = st.secrets["GEMINI_API_KEY"]
 client = genai.Client(api_key=api_key)
 
 # User question
+topic = st.selectbox(
+    "Select a health topic:",
+    [
+        "Maternal Health",
+        "Child Health",
+        "Skin Problems",
+        "Diabetes",
+        "Hypertension (High Blood Pressure)",
+        "Fever & Infections",
+        "Respiratory Problems",
+        "Nutrition",
+        "Immunization",
+        "Mental Wellbeing",
+        "Women's Health",
+        "Men's Health",
+        "Elderly Health",
+        "First Aid",
+        "General Symptoms"
+    ]
+)
+
 question = st.text_area(
     "Ask Saathi a health-related question:",
     placeholder="Example: What warning signs should I look for during pregnancy?"
