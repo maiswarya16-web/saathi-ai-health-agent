@@ -70,9 +70,14 @@ Important:
 
         try:
             response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
+    model="gemini-3.6-flash",
+    contents=prompt
+)
+
+answer = response.text
+
+st.subheader("Saathi's Response")
+st.write(answer)
 
             st.subheader("Saathi's Response")
             st.write(response.text)
