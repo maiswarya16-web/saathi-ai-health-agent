@@ -75,7 +75,21 @@ Important:
 )
 
 answer = response.text
+red_flag_words = [
+    "difficulty breathing",
+    "severe chest pain",
+    "unconscious",
+    "heavy bleeding",
+    "seizure",
+    "severe allergic reaction"
+]
 
+if any(word in question.lower() for word in red_flag_words):
+    st.error(
+        "🚨 Possible emergency warning sign detected. "
+        "Seek urgent professional medical assessment "
+        "according to the applicable health protocol."
+    )
 st.subheader("Saathi's Response")
 st.write(answer)
 
