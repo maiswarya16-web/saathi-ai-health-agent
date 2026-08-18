@@ -73,7 +73,6 @@ Important:
     model="gemini-3.6-flash",
     contents=prompt
 )
-
 answer = response.text
 red_flag_words = [
     "difficulty breathing",
