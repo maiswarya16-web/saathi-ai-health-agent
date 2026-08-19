@@ -17,17 +17,20 @@ st.set_page_config(
 # GEMINI CONFIGURATION
 # =========================================================
 
+# Keep the model name that your API project supports.
 MODEL_NAME = "gemini-3.6-flash"
+
 
 @st.cache_resource
 def get_gemini_client():
     return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
+
 client = get_gemini_client()
 
 
 def call_gemini(contents):
-    """Make ONE Gemini request. Do not add custom retries here."""
+    """Make one Gemini request."""
     return client.models.generate_content(
         model=MODEL_NAME,
         contents=contents,
@@ -77,15 +80,19 @@ def show_gemini_error(error):
             "The health red-flag checker still works locally. "
             "Please wait for the Gemini limit to become available."
         )
+
     elif category == "temporary":
         st.warning("⚠️ Saathi's AI service is temporarily unavailable.")
         st.info("Gemini may be busy. Please try again shortly.")
+
     elif category == "model":
         st.error(f"❌ Gemini model '{MODEL_NAME}' was not found.")
         st.info("Check the model name in Google AI Studio/API documentation.")
+
     elif category == "auth":
         st.error("❌ Gemini API authentication failed.")
         st.info("Check GEMINI_API_KEY in Streamlit Secrets.")
+
     else:
         st.error("❌ Saathi encountered a technical error.")
         st.info("Please check the technical details below.")
@@ -317,14 +324,19 @@ if "voice_question" not in st.session_state:
 if "last_audio_bytes" not in st.session_state:
     st.session_state.last_audio_bytes = None
 
-# Only transcribe a NEW recording when the user presses Ask Saathi.
-# This prevents Streamlit reruns from repeatedly spending Gemini requests.
+# Only detect a NEW recording.
 new_audio_bytes = None
+
 if audio_value is not None:
     try:
         candidate_audio = audio_value.getvalue()
-        if candidate_audio and candidate_audio != st.session_state.last_audio_bytes:
+
+        if (
+            candidate_audio
+            and candidate_audio != st.session_state.last_audio_bytes
+        ):
             new_audio_bytes = candidate_audio
+
     except Exception:
         new_audio_bytes = None
 
@@ -332,7 +344,6 @@ if audio_value is not None:
 # RED-FLAG DETECTION
 # =========================================================
 
-# Broad emergency coverage. This is a safety screen, not a diagnosis.
 RED_FLAG_GROUPS = {
     "Possible heart emergency": [
         "heart attack", "myocardial infarction", "heart attack symptoms",
@@ -504,24 +515,25 @@ RED_FLAG_GROUPS = {
     ],
 }
 
-# Additional high-risk symptom patterns. These are intentionally symptom-based
-# because a symptom can be urgent even when the exact disease is unknown.
 RED_FLAG_GROUPS.update({
     "Possible severe infection / sepsis": [
-        "sepsis", "septic shock", "very confused with fever", "confusion with fever",
-        "rapid breathing with fever", "very sick with fever",
+        "sepsis", "septic shock", "very confused with fever",
+        "confusion with fever", "rapid breathing with fever",
+        "very sick with fever",
         "बहुत तेज बुखार और भ्रम", "बुखार के साथ बेहोशी",
     ],
     "Possible diabetic emergency": [
-        "severe low blood sugar", "very low blood sugar", "hypoglycemia with unconsciousness",
-        "diabetic coma", "very high blood sugar with vomiting",
+        "severe low blood sugar", "very low blood sugar",
+        "hypoglycemia with unconsciousness", "diabetic coma",
+        "very high blood sugar with vomiting",
         "मधुमेह में बेहोशी", "बहुत कम शुगर", "बहुत ज्यादा शुगर और उल्टी",
     ],
     "Possible hypertensive emergency": [
         "very high blood pressure with chest pain",
         "very high blood pressure with severe headache",
         "high bp with chest pain", "high bp with weakness",
-        "बहुत ज्यादा रक्तचाप और सीने में दर्द", "बहुत ज्यादा बीपी और तेज सिरदर्द",
+        "बहुत ज्यादा रक्तचाप और सीने में दर्द",
+        "बहुत ज्यादा बीपी और तेज सिरदर्द",
     ],
     "Possible severe asthma / airway emergency": [
         "severe asthma attack", "asthma attack cannot speak",
@@ -529,21 +541,22 @@ RED_FLAG_GROUPS.update({
         "गंभीर अस्थमा का दौरा", "अस्थमा में सांस नहीं आ रही",
     ],
     "Possible meningitis / serious brain infection": [
-        "stiff neck with fever", "fever and stiff neck", "severe headache with stiff neck",
+        "stiff neck with fever", "fever and stiff neck",
+        "severe headache with stiff neck",
         "बुखार और गर्दन अकड़ना", "तेज सिरदर्द और गर्दन अकड़ना",
     ],
     "Possible kidney / urinary emergency": [
         "no urine", "unable to pass urine", "severe flank pain with fever",
-        "severe kidney pain with fever", "पेशाब बिल्कुल नहीं हो रहा", "बुखार के साथ तेज कमर दर्द",
+        "severe kidney pain with fever", "पेशाब बिल्कुल नहीं हो रहा",
+        "बुखार के साथ तेज कमर दर्द",
     ],
     "Possible eye emergency": [
-        "sudden loss of vision", "sudden blindness", "chemical in eye with severe pain",
+        "sudden loss of vision", "sudden blindness",
+        "chemical in eye with severe pain",
         "अचानक दिखाई नहीं दे रहा", "अचानक दृष्टि चली गई",
     ],
 })
 
-
-# Extra English disease/emergency aliases with common typing mistakes.
 FUZZY_RED_FLAGS = [
     "heart attack",
     "stroke",
@@ -573,11 +586,7 @@ def normalize_text(text):
 
 
 def collapse_repeated_letters(text):
-    """Reduce accidental repeated letters in typed English words.
-
-    Example: heart atttack -> heart attack
-    This is used only as an additional safety-screening pass.
-    """
+    """Reduce accidental repeated letters in typed English words."""
     return re.sub(r"(.)\1{1,}", r"\1", normalize_text(text))
 
 
@@ -591,6 +600,7 @@ def detect_red_flags(text):
 
     for category, keywords in RED_FLAG_GROUPS.items():
         exact_matches = []
+
         for keyword in keywords:
             if normalize_text(keyword) in normalized:
                 exact_matches.append(keyword)
@@ -598,8 +608,6 @@ def detect_red_flags(text):
         if exact_matches:
             detected.append((category, exact_matches[:3]))
 
-    # Fuzzy matching catches common English typing mistakes such as
-    # "heart atttack", "cant breathe", etc.
     english_words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
     english_text = " ".join(english_words)
     collapsed_text = collapse_repeated_letters(english_text)
@@ -608,14 +616,23 @@ def detect_red_flags(text):
         phrase = normalize_text(phrase)
         collapsed_phrase = collapse_repeated_letters(phrase)
 
-        # Exact match after repeated-letter correction.
         if collapsed_phrase in collapsed_text:
             for category, keywords in RED_FLAG_GROUPS.items():
-                if phrase in [normalize_text(k) for k in keywords]:
-                    existing = next((item for item in detected if item[0] == category), None)
+                normalized_keywords = [normalize_text(k) for k in keywords]
+
+                if phrase in normalized_keywords:
+                    existing = next(
+                        (item for item in detected if item[0] == category),
+                        None,
+                    )
+
                     if existing is None:
-                        detected.append((category, [f"possible match: {phrase}"]))
+                        detected.append(
+                            (category, [f"possible match: {phrase}"])
+                        )
+
                     break
+
             continue
 
         phrase_words = collapsed_phrase.split()
@@ -624,20 +641,34 @@ def detect_red_flags(text):
 
         if len(text_words) >= len(phrase_words):
             n = len(phrase_words)
+
             for i in range(len(text_words) - n + 1):
                 window = " ".join(text_words[i:i + n])
+
                 best_ratio = max(
                     best_ratio,
-                    difflib.SequenceMatcher(None, window, collapsed_phrase).ratio(),
+                    difflib.SequenceMatcher(
+                        None,
+                        window,
+                        collapsed_phrase,
+                    ).ratio(),
                 )
 
         if best_ratio >= 0.86:
             for category, keywords in RED_FLAG_GROUPS.items():
                 normalized_keywords = [normalize_text(k) for k in keywords]
+
                 if phrase in normalized_keywords:
-                    existing = next((item for item in detected if item[0] == category), None)
+                    existing = next(
+                        (item for item in detected if item[0] == category),
+                        None,
+                    )
+
                     if existing is None:
-                        detected.append((category, [f"possible match: {phrase}"]))
+                        detected.append(
+                            (category, [f"possible match: {phrase}"])
+                        )
+
                     break
 
     return detected
@@ -651,7 +682,7 @@ RED_FLAG_TITLE = {
     "English": "🚨 POSSIBLE RED FLAG / URGENT WARNING",
     "Hindi": "🚨 संभावित गंभीर चेतावनी / तत्काल चिकित्सा सहायता",
     "Tamil": "🚨 சாத்தியமான ஆபத்து அறிகுறி / அவசர எச்சரிக்கை",
-    "Telugu": "🚨 ప్రమాద సూచన / అత్యవసர హెచ్చరిక",
+    "Telugu": "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక",
     "Malayalam": "🚨 സാധ്യതയുള്ള അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്",
     "Kannada": "🚨 ಸಾಧ್ಯವಾದ ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ",
     "Bengali": "🚨 সম্ভাব্য বিপদের লক্ষণ / জরুরি সতর্কতা",
@@ -701,54 +732,82 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_local_fallback(language, detected_flags):
-    """Show safe guidance even when Gemini is unavailable or rate-limited."""
+    """Show safe guidance when Gemini is unavailable."""
     if detected_flags:
         if language == "Hindi":
             st.error("🚨 संभावित आपातकाल: तुरंत चिकित्सा मूल्यांकन की व्यवस्था करें।")
-            st.write("व्यक्ति को अकेला न छोड़ें और स्थिति गंभीर होने पर स्थानीय आपातकालीन सेवा/निकटतम स्वास्थ्य सुविधा से तुरंत संपर्क करें।")
+            st.write(
+                "व्यक्ति को अकेला न छोड़ें और स्थिति गंभीर होने पर "
+                "स्थानीय आपातकालीन सेवा/निकटतम स्वास्थ्य सुविधा से तुरंत संपर्क करें।"
+            )
+
         elif language == "Tamil":
             st.error("🚨 சாத்தியமான அவசர நிலை: உடனடி மருத்துவ மதிப்பீடு தேவைப்படலாம்.")
-            st.write("நபரை தனியாக விடாதீர்கள். நிலை தீவிரமாக இருந்தால் உடனடியாக அவசர மருத்துவ உதவியை அணுகுங்கள்.")
+            st.write(
+                "நபரை தனியாக விடாதீர்கள். நிலை தீவிரமாக இருந்தால் "
+                "உடனடியாக அவசர மருத்துவ உதவியை அணுகுங்கள்."
+            )
+
         elif language == "Telugu":
             st.error("🚨 సాధ్యమైన అత్యవసర పరిస్థితి: వెంటనే వైద్య పరీక్ష అవసరం కావచ్చు.")
-            st.write("వ్యక్తిని ఒంటరిగా వదలకండి. పరిస్థితి తీవ్రంగా ఉంటే వెంటనే అత్యవసర వైద్య సహాయం పొందండి.")
+            st.write(
+                "వ్యక్తిని ఒంటరిగా వదలకండి. పరిస్థితి తీవ్రంగా ఉంటే "
+                "వెంటనే అత్యవసర వైద్య సహాయం పొందండి."
+            )
+
         elif language == "Malayalam":
             st.error("🚨 സാധ്യതയുള്ള അടിയന്തരാവസ്ഥ: ഉടൻ മെഡിക്കൽ പരിശോധന ആവശ്യമായേക്കാം.")
-            st.write("വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്. ഗുരുതരമാണെങ്കിൽ ഉടൻ അടിയന്തര മെഡിക്കൽ സഹായം തേടുക.")
+            st.write(
+                "വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്. ഗുരുതരമാണെങ്കിൽ "
+                "ഉടൻ അടിയന്തര മെഡിക്കൽ സഹായം തേടുക."
+            )
+
         elif language == "Kannada":
             st.error("🚨 ಸಾಧ್ಯವಾದ ತುರ್ತು ಪರಿಸ್ಥಿತಿ: ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆ ಅಗತ್ಯವಾಗಬಹುದು.")
-            st.write("ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ. ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ ತಕ್ಷಣ ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ.")
+            st.write(
+                "ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ. ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ "
+                "ತಕ್ಷಣ ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ."
+            )
+
         elif language == "Bengali":
             st.error("🚨 সম্ভাব্য জরুরি অবস্থা: অবিলম্বে চিকিৎসা মূল্যায়ন প্রয়োজন হতে পারে।")
-            st.write("ব্যক্তিকে একা রাখবেন না। অবস্থা গুরুতর হলে অবিলম্বে জরুরি চিকিৎসা সহায়তা নিন।")
+            st.write(
+                "ব্যক্তিকে একা রাখবেন না। অবস্থা গুরুতর হলে "
+                "অবিলম্বে জরুরি চিকিৎসা সহায়তা নিন।"
+            )
+
         elif language == "Marathi":
             st.error("🚨 संभाव्य आपत्कालीन स्थिती: तातडीची वैद्यकीय तपासणी आवश्यक असू शकते.")
-            st.write("व्यक्तीला एकटे सोडू नका. स्थिती गंभीर असल्यास त्वरित आपत्कालीन वैद्यकीय मदत घ्या.")
+            st.write(
+                "व्यक्तीला एकटे सोडू नका. स्थिती गंभीर असल्यास "
+                "त्वरित आपत्कालीन वैद्यकीय मदत घ्या."
+            )
+
         else:
             st.error("🚨 Possible emergency: urgent medical assessment may be needed.")
-            st.write("Do not leave the person alone. If the person is seriously unwell, seek urgent emergency medical care.")
+            st.write(
+                "Do not leave the person alone. If the person is seriously unwell, "
+                "seek urgent emergency medical care."
+            )
+
     else:
-        st.info("Saathi's AI response is temporarily unavailable. The local safety screen found no emergency keyword, but this does not rule out a medical emergency.")
+        st.info(
+            "Saathi's AI response is temporarily unavailable. "
+            "The local safety screen found no emergency keyword, "
+            "but this does not rule out a medical emergency."
+        )
 
-...
-RED_FLAG_MESSAGES = {
-    ...
-}
 
-# =========================================================
-# PATIENT RECORDS
-# =========================================================
 # =========================================================
 # ASK SAATHI
 # =========================================================
 
-if st.button(ui["button"], type="primary"):
-    ...
-# =========================================================
-# ASK SAATHI
-# =========================================================
+if st.button(
+    ui["button"],
+    type="primary",
+    key="ask_saathi_button",
+):
 
-if st.button(ui["button"], type="primary"):
     final_question = question.strip()
 
     # -----------------------------------------------------
@@ -776,7 +835,9 @@ Language context: {language}
                     {
                         "role": "user",
                         "parts": [
-                            {"text": voice_prompt},
+                            {
+                                "text": voice_prompt
+                            },
                             {
                                 "inline_data": {
                                     "mime_type": "audio/wav",
@@ -790,6 +851,7 @@ Language context: {language}
 
             if voice_response and voice_response.text:
                 final_question = voice_response.text.strip()
+
                 st.session_state.voice_question = final_question
                 st.session_state.last_audio_bytes = new_audio_bytes
 
@@ -800,9 +862,16 @@ Language context: {language}
         except Exception as e:
             show_gemini_error(e)
 
-    # Use the last successful transcription if no text was typed.
+    # -----------------------------------------------------
+    # USE LAST SUCCESSFUL VOICE TRANSCRIPTION
+    # -----------------------------------------------------
+
     if not final_question and st.session_state.voice_question:
         final_question = st.session_state.voice_question.strip()
+
+        # Clear the old transcription so it is not reused
+        # accidentally on a later button click.
+        st.session_state.voice_question = ""
 
     # -----------------------------------------------------
     # EMPTY QUESTION
@@ -812,12 +881,12 @@ Language context: {language}
         st.warning(ui["empty"])
 
     else:
-        st.info(f"📝 Question received:\n\n{final_question}")
+        st.info(
+            f"📝 Question received:\n\n{final_question}"
+        )
 
         # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
-        # This happens BEFORE Gemini, so red flags still work
-        # even when Gemini is unavailable or rate-limited.
         # -------------------------------------------------
 
         detected_flags = detect_red_flags(final_question)
@@ -828,7 +897,9 @@ Language context: {language}
                 f"{RED_FLAG_MESSAGE[language]}"
             )
 
-            st.markdown("### 🚨 Possible emergency category detected")
+            st.markdown(
+                "### 🚨 Possible emergency category detected"
+            )
 
             for category, matches in detected_flags:
                 st.markdown(
@@ -918,7 +989,10 @@ STRUCTURE:
                 )
 
         except Exception as e:
-            # Gemini can be unavailable or rate-limited.
-            # Local red-flag screening remains usable.
-            show_local_fallback(language, detected_flags)
+            # Local red-flag screening remains usable even
+            # when Gemini is unavailable or rate-limited.
+            show_local_fallback(
+                language,
+                detected_flags,
+            )
             show_gemini_error(e)
