@@ -28,6 +28,23 @@ st.write(
 )
 
 # -----------------------------
+# LANGUAGE
+# -----------------------------
+language = st.selectbox(
+    "🌐 Select your language:",
+    [
+        "English",
+        "Hindi",
+        "Tamil",
+        "Telugu",
+        "Malayalam",
+        "Kannada",
+        "Bengali",
+        "Marathi"
+    ]
+)
+
+# -----------------------------
 # HEALTH TOPIC
 # -----------------------------
 topic = st.selectbox(
@@ -99,6 +116,7 @@ RED_FLAGS = [
     "electric shock"
 ]
 
+
 def detect_red_flags(text):
     text = text.lower()
     detected = []
@@ -150,6 +168,15 @@ Selected health topic:
 
 Health question:
 {question}
+
+Response language:
+{language}
+
+IMPORTANT LANGUAGE RULE:
+- Answer entirely in {language}.
+- Use simple, clear language that frontline health workers can understand.
+- Do not switch to English unless a medical term is necessary.
+- If a medical term is necessary, explain it simply in {language}.
 
 Provide clear, simple and practical health information.
 
