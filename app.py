@@ -326,8 +326,7 @@ if st.button("Ask Saathi"):
         # RED FLAG ALERT
         # -----------------------------
         if detected_flags:
-
-    RED_FLAG_MESSAGES = {
+           RED_FLAG_MESSAGES = {
         "English": (
             "🚨 RED FLAG / URGENT WARNING\n\n"
             "The question contains a possible warning sign "
@@ -404,7 +403,6 @@ if st.button("Ask Saathi"):
     red_flag_title, red_flag_advice = RED_FLAG_MESSAGES[language]
 
     st.error(red_flag_title)
-
     st.warning(red_flag_advice)
 
         # -----------------------------
