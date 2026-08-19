@@ -211,12 +211,11 @@ Structure the answer as:
             st.success("🩺 Saathi's Guidance")
             st.write(answer)
 
-        except Exception as e:
+                except Exception as e:
 
-            st.error(
-                "Sorry, Saathi could not answer right now. "
-                "Please check the API configuration."
-            )
+            st.error("❌ Saathi encountered an error.")
+
+            st.code(str(e))
 
     else:
 
