@@ -18,9 +18,14 @@ st.set_page_config(
 # GEMINI API CLIENT
 # =========================================================
 
-client = genai.Client(
-    api_key=st.secrets["GEMINI_API_KEY"]
-)
+@st.cache_resource
+def get_gemini_client():
+    return genai.Client(
+        api_key=st.secrets["GEMINI_API_KEY"]
+    )
+
+
+client = get_gemini_client()
 
 
 # =========================================================
