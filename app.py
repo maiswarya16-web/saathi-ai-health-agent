@@ -1238,7 +1238,7 @@ except Exception as e:
             # 429 / RATE LIMIT
             # -------------------------------------------------
 
-            elif (
+    elif (
                 "429" in error_upper
                 or "RESOURCE_EXHAUSTED" in error_upper
             ):
