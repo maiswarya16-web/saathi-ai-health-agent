@@ -730,7 +730,24 @@ def show_local_fallback(language, detected_flags):
     else:
         st.info("Saathi's AI response is temporarily unavailable. The local safety screen found no emergency keyword, but this does not rule out a medical emergency.")
 
+...
+RED_FLAG_MESSAGES = {
+    ...
+}
 
+# =========================================================
+# PATIENT RECORDS
+# =========================================================
+
+⬅️ PATIENT RECORDS CODE GOES HERE
+
+
+# =========================================================
+# ASK SAATHI
+# =========================================================
+
+if st.button(ui["button"], type="primary"):
+    ...
 # =========================================================
 # ASK SAATHI
 # =========================================================
