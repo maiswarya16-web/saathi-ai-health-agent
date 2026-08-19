@@ -1257,7 +1257,7 @@ except Exception as e:
             # OTHER SERVER ERRORS
             # -------------------------------------------------
 
-            elif (
+    elif (
                 "500" in error_upper
                 or "502" in error_upper
                 or "504" in error_upper
