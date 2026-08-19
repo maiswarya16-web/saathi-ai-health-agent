@@ -1218,7 +1218,7 @@ except Exception as e:
         st.info(
             "Please check your API configuration and try again."
         )
-            if (
+    if (
                 "503" in error_upper
                 or "UNAVAILABLE" in error_upper
             ):
