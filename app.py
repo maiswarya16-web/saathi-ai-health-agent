@@ -172,23 +172,19 @@ Health question:
 Response language:
 {language}
 
-IMPORTANT LANGUAGE RULE:
+IMPORTANT LANGUAGE RULES:
 - Answer entirely in {language}.
-- Use simple, clear language that frontline health workers can understand.
+- Use simple, clear language suitable for frontline health workers.
 - Do not switch to English unless a medical term is necessary.
 - If a medical term is necessary, explain it simply in {language}.
-
-Provide clear, simple and practical health information.
 
 SAFETY RULES:
 - Do not diagnose the patient.
 - Do not prescribe medicines or dosages.
 - Mention important warning signs when relevant.
-- If the symptoms could indicate an emergency, clearly recommend
+- If symptoms could indicate an emergency, clearly recommend
   urgent medical evaluation.
 - Do not tell the user to wait when serious warning signs are present.
-- Use simple language suitable for frontline health workers.
-- Focus on the selected health topic.
 - Encourage referral to an appropriate healthcare professional
   when necessary.
 
@@ -211,7 +207,7 @@ Structure the answer as:
             st.success("🩺 Saathi's Guidance")
             st.write(answer)
 
-            except Exception as e:
+        except Exception as e:
 
             st.error("❌ Saathi encountered an error.")
             st.code(str(e))
