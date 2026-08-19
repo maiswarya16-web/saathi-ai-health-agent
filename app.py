@@ -211,10 +211,9 @@ Structure the answer as:
             st.success("🩺 Saathi's Guidance")
             st.write(answer)
 
-                except Exception as e:
+            except Exception as e:
 
             st.error("❌ Saathi encountered an error.")
-
             st.code(str(e))
 
     else:
