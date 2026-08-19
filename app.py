@@ -45,9 +45,9 @@ def generate_gemini_response(prompt, max_retries=3):
             try:
 
                 response = client.models.generate_content(
-                    model=model_name,
+                    model="gemini-3.6-flash",
                     contents=prompt
-                )
+)
 
                 if response and response.text:
                     return response.text
