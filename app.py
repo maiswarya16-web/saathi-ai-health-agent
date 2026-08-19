@@ -1251,10 +1251,6 @@ except Exception as e:
         st.info(
             "Please check your API configuration and try again."
         )
-
-            error_upper = error_text.upper()
-
-
             # -------------------------------------------------
             # 503 / TEMPORARY GEMINI ERROR
             # -------------------------------------------------
