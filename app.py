@@ -504,6 +504,45 @@ RED_FLAG_GROUPS = {
     ],
 }
 
+# Additional high-risk symptom patterns. These are intentionally symptom-based
+# because a symptom can be urgent even when the exact disease is unknown.
+RED_FLAG_GROUPS.update({
+    "Possible severe infection / sepsis": [
+        "sepsis", "septic shock", "very confused with fever", "confusion with fever",
+        "rapid breathing with fever", "very sick with fever",
+        "बहुत तेज बुखार और भ्रम", "बुखार के साथ बेहोशी",
+    ],
+    "Possible diabetic emergency": [
+        "severe low blood sugar", "very low blood sugar", "hypoglycemia with unconsciousness",
+        "diabetic coma", "very high blood sugar with vomiting",
+        "मधुमेह में बेहोशी", "बहुत कम शुगर", "बहुत ज्यादा शुगर और उल्टी",
+    ],
+    "Possible hypertensive emergency": [
+        "very high blood pressure with chest pain",
+        "very high blood pressure with severe headache",
+        "high bp with chest pain", "high bp with weakness",
+        "बहुत ज्यादा रक्तचाप और सीने में दर्द", "बहुत ज्यादा बीपी और तेज सिरदर्द",
+    ],
+    "Possible severe asthma / airway emergency": [
+        "severe asthma attack", "asthma attack cannot speak",
+        "wheezing and cannot breathe", "breathing too difficult to speak",
+        "गंभीर अस्थमा का दौरा", "अस्थमा में सांस नहीं आ रही",
+    ],
+    "Possible meningitis / serious brain infection": [
+        "stiff neck with fever", "fever and stiff neck", "severe headache with stiff neck",
+        "बुखार और गर्दन अकड़ना", "तेज सिरदर्द और गर्दन अकड़ना",
+    ],
+    "Possible kidney / urinary emergency": [
+        "no urine", "unable to pass urine", "severe flank pain with fever",
+        "severe kidney pain with fever", "पेशाब बिल्कुल नहीं हो रहा", "बुखार के साथ तेज कमर दर्द",
+    ],
+    "Possible eye emergency": [
+        "sudden loss of vision", "sudden blindness", "chemical in eye with severe pain",
+        "अचानक दिखाई नहीं दे रहा", "अचानक दृष्टि चली गई",
+    ],
+})
+
+
 # Extra English disease/emergency aliases with common typing mistakes.
 FUZZY_RED_FLAGS = [
     "heart attack",
@@ -527,9 +566,19 @@ FUZZY_RED_FLAGS = [
 
 
 def normalize_text(text):
-    text = text.lower().replace("’", "'")
+    """Normalize text for reliable multilingual keyword matching."""
+    text = str(text).lower().replace("’", "'")
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
+
+def collapse_repeated_letters(text):
+    """Reduce accidental repeated letters in typed English words.
+
+    Example: heart atttack -> heart attack
+    This is used only as an additional safety-screening pass.
+    """
+    return re.sub(r"(.)\1{1,}", r"\1", normalize_text(text))
 
 
 def detect_red_flags(text):
@@ -549,43 +598,44 @@ def detect_red_flags(text):
         if exact_matches:
             detected.append((category, exact_matches[:3]))
 
-    # Fuzzy matching catches simple typos such as "heart atttack".
+    # Fuzzy matching catches common English typing mistakes such as
+    # "heart atttack", "cant breathe", etc.
     english_words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
     english_text = " ".join(english_words)
+    collapsed_text = collapse_repeated_letters(english_text)
 
     for phrase in FUZZY_RED_FLAGS:
-        if phrase in english_text:
+        phrase = normalize_text(phrase)
+        collapsed_phrase = collapse_repeated_letters(phrase)
+
+        # Exact match after repeated-letter correction.
+        if collapsed_phrase in collapsed_text:
+            for category, keywords in RED_FLAG_GROUPS.items():
+                if phrase in [normalize_text(k) for k in keywords]:
+                    existing = next((item for item in detected if item[0] == category), None)
+                    if existing is None:
+                        detected.append((category, [f"possible match: {phrase}"]))
+                    break
             continue
 
-        ratio = difflib.SequenceMatcher(
-            None,
-            english_text,
-            phrase,
-        ).ratio()
+        phrase_words = collapsed_phrase.split()
+        text_words = collapsed_text.split()
+        best_ratio = 0.0
 
-        # Compare against short windows around the phrase length.
-        phrase_words = phrase.split()
-        text_words = english_text.split()
-
-        best_ratio = ratio
         if len(text_words) >= len(phrase_words):
             n = len(phrase_words)
             for i in range(len(text_words) - n + 1):
                 window = " ".join(text_words[i:i + n])
                 best_ratio = max(
                     best_ratio,
-                    difflib.SequenceMatcher(
-                        None, window, phrase
-                    ).ratio(),
+                    difflib.SequenceMatcher(None, window, collapsed_phrase).ratio(),
                 )
 
-        if best_ratio >= 0.88:
+        if best_ratio >= 0.86:
             for category, keywords in RED_FLAG_GROUPS.items():
-                if phrase in [normalize_text(k) for k in keywords]:
-                    existing = next(
-                        (item for item in detected if item[0] == category),
-                        None,
-                    )
+                normalized_keywords = [normalize_text(k) for k in keywords]
+                if phrase in normalized_keywords:
+                    existing = next((item for item in detected if item[0] == category), None)
                     if existing is None:
                         detected.append((category, [f"possible match: {phrase}"]))
                     break
@@ -644,6 +694,41 @@ RED_FLAG_MESSAGE = {
         "फक्त साथीवर अवलंबून राहू नका. तातडीची वैद्यकीय तपासणी करून घ्या."
     ),
 }
+
+
+# =========================================================
+# LOCAL FALLBACK GUIDANCE
+# =========================================================
+
+def show_local_fallback(language, detected_flags):
+    """Show safe guidance even when Gemini is unavailable or rate-limited."""
+    if detected_flags:
+        if language == "Hindi":
+            st.error("🚨 संभावित आपातकाल: तुरंत चिकित्सा मूल्यांकन की व्यवस्था करें।")
+            st.write("व्यक्ति को अकेला न छोड़ें और स्थिति गंभीर होने पर स्थानीय आपातकालीन सेवा/निकटतम स्वास्थ्य सुविधा से तुरंत संपर्क करें।")
+        elif language == "Tamil":
+            st.error("🚨 சாத்தியமான அவசர நிலை: உடனடி மருத்துவ மதிப்பீடு தேவைப்படலாம்.")
+            st.write("நபரை தனியாக விடாதீர்கள். நிலை தீவிரமாக இருந்தால் உடனடியாக அவசர மருத்துவ உதவியை அணுகுங்கள்.")
+        elif language == "Telugu":
+            st.error("🚨 సాధ్యమైన అత్యవసర పరిస్థితి: వెంటనే వైద్య పరీక్ష అవసరం కావచ్చు.")
+            st.write("వ్యక్తిని ఒంటరిగా వదలకండి. పరిస్థితి తీవ్రంగా ఉంటే వెంటనే అత్యవసర వైద్య సహాయం పొందండి.")
+        elif language == "Malayalam":
+            st.error("🚨 സാധ്യതയുള്ള അടിയന്തരാവസ്ഥ: ഉടൻ മെഡിക്കൽ പരിശോധന ആവശ്യമായേക്കാം.")
+            st.write("വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്. ഗുരുതരമാണെങ്കിൽ ഉടൻ അടിയന്തര മെഡിക്കൽ സഹായം തേടുക.")
+        elif language == "Kannada":
+            st.error("🚨 ಸಾಧ್ಯವಾದ ತುರ್ತು ಪರಿಸ್ಥಿತಿ: ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆ ಅಗತ್ಯವಾಗಬಹುದು.")
+            st.write("ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ. ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ ತಕ್ಷಣ ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ.")
+        elif language == "Bengali":
+            st.error("🚨 সম্ভাব্য জরুরি অবস্থা: অবিলম্বে চিকিৎসা মূল্যায়ন প্রয়োজন হতে পারে।")
+            st.write("ব্যক্তিকে একা রাখবেন না। অবস্থা গুরুতর হলে অবিলম্বে জরুরি চিকিৎসা সহায়তা নিন।")
+        elif language == "Marathi":
+            st.error("🚨 संभाव्य आपत्कालीन स्थिती: तातडीची वैद्यकीय तपासणी आवश्यक असू शकते.")
+            st.write("व्यक्तीला एकटे सोडू नका. स्थिती गंभीर असल्यास त्वरित आपत्कालीन वैद्यकीय मदत घ्या.")
+        else:
+            st.error("🚨 Possible emergency: urgent medical assessment may be needed.")
+            st.write("Do not leave the person alone. If the person is seriously unwell, seek urgent emergency medical care.")
+    else:
+        st.info("Saathi's AI response is temporarily unavailable. The local safety screen found no emergency keyword, but this does not rule out a medical emergency.")
 
 
 # =========================================================
@@ -820,6 +905,7 @@ STRUCTURE:
                 )
 
         except Exception as e:
-            # IMPORTANT: no error_upper / stray if statements here.
-            # This block is deliberately simple to prevent indentation errors.
+            # Gemini can be unavailable or rate-limited.
+            # Local red-flag screening remains usable.
+            show_local_fallback(language, detected_flags)
             show_gemini_error(e)
