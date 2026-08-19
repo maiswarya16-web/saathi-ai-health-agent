@@ -328,11 +328,63 @@ question = st.text_area(
 # VOICE INPUT
 # -----------------------------
 
+# -----------------------------
+# VOICE INPUT
+# -----------------------------
+
 st.subheader("🎤 Voice Input")
 
 audio_value = st.audio_input(
     "Tap the microphone and speak your health question:"
 )
+
+voice_question = ""
+
+if audio_value is not None:
+
+    try:
+        audio_bytes = audio_value.read()
+
+        voice_response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=[
+                {
+                    "role": "user",
+                    "parts": [
+                        {
+                            "text": f"""
+Transcribe the following audio into text.
+
+The speaker may be using:
+English, Hindi, Tamil, Telugu, Malayalam,
+Kannada, Bengali, or Marathi.
+
+Return ONLY the spoken words.
+Do not translate them.
+Do not explain anything.
+"""
+                        },
+                        {
+                            "inline_data": {
+                                "mime_type": "audio/wav",
+                                "data": audio_bytes
+                            }
+                        }
+                    ]
+                }
+            ]
+        )
+
+        voice_question = voice_response.text.strip()
+
+        if voice_question:
+            st.success("🎤 Voice detected")
+            st.write("*You said:*")
+            st.write(voice_question)
+
+    except Exception as e:
+        st.error("❌ Could not process the voice recording.")
+        st.error(str(e))
 # =========================================================
 # RED FLAG DETECTION
 # =========================================================
