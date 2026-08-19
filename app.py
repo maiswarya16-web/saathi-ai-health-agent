@@ -1169,36 +1169,88 @@ and not a diagnosis or replacement for professional care.
         # GEMINI RESPONSE WITH RETRY
         # -------------------------------------------------
 
-        try:
+        # -------------------------------------------------
+# GEMINI RESPONSE WITH SAFE ERROR HANDLING
+# -------------------------------------------------
 
-            with st.spinner(
-                "🩺 Saathi is preparing guidance..."
-            ):
+try:
 
-                response = generate_with_retry(
-                    prompt,
-                    max_retries=4
-                )
+    with st.spinner("🩺 Saathi is preparing guidance..."):
 
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
 
-            if response and response.text:
+    if response.text:
 
-                st.success(ui["guidance"])
+        st.success(ui["guidance"])
+        st.write(response.text)
 
-                st.write(response.text)
+    else:
 
+        st.warning(
+            "⚠️ Saathi could not generate a response right now. "
+            "Please try again later."
+        )
 
-            else:
+except Exception as e:
 
-                st.error(
-                    "❌ Saathi did not receive a response. "
-                    "Please try again."
-                )
+    error_message = str(e).lower()
 
+    # ---------------------------------------------
+    # API QUOTA / RATE LIMIT
+    # ---------------------------------------------
 
-        except Exception as e:
+    if (
+        "quota" in error_message
+        or "rate limit" in error_message
+        or "resource exhausted" in error_message
+        or "429" in error_message
+    ):
 
-            error_text = str(e)
+        st.warning(
+            "⚠️ Saathi's AI request limit has been reached."
+        )
+
+        st.info(
+            "The health-safety features such as red-flag detection "
+            "can still work locally. Please try the AI response again "
+            "after the API limit becomes available."
+        )
+
+    # ---------------------------------------------
+    # TEMPORARY GEMINI SERVICE ERROR
+    # ---------------------------------------------
+
+    elif (
+        "503" in error_message
+        or "unavailable" in error_message
+        or "overloaded" in error_message
+    ):
+
+        st.warning(
+            "⚠️ Saathi's AI service is temporarily unavailable."
+        )
+
+        st.info(
+            "Please wait a little and try again. "
+            "This is a temporary AI service issue."
+        )
+
+    # ---------------------------------------------
+    # OTHER ERROR
+    # ---------------------------------------------
+
+    else:
+
+        st.error(
+            "❌ Saathi encountered a temporary error."
+        )
+
+        st.info(
+            "Please check your API configuration and try again."
+        )
 
             error_upper = error_text.upper()
 
