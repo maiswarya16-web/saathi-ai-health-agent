@@ -21,15 +21,65 @@ st.set_page_config(
 client = genai.Client(
     api_key=st.secrets["GEMINI_API_KEY"]
 )
-
-
 # =========================================================
-# MODELS
+# GEMINI SAFE RESPONSE WITH RETRY + FALLBACK
 # =========================================================
 
 PRIMARY_MODEL = "gemini-3.6-flash"
-FALLBACK_MODEL = "gemini-3.5-flash"
+FALLBACK_MODEL = "gemini-2.5-flash"
 
+
+def generate_gemini_response(prompt, max_retries=3):
+
+    models_to_try = [
+        PRIMARY_MODEL,
+        FALLBACK_MODEL
+    ]
+
+    last_error = None
+
+    for model_name in models_to_try:
+
+        for attempt in range(max_retries):
+
+            try:
+
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+
+                if response and response.text:
+                    return response.text
+
+            except Exception as e:
+
+                last_error = e
+                error_text = str(e).lower()
+
+                # Temporary Gemini problems
+                temporary_error = (
+                    "503" in error_text
+                    or "unavailable" in error_text
+                    or "429" in error_text
+                    or "resource_exhausted" in error_text
+                    or "high demand" in error_text
+                    or "overloaded" in error_text
+                )
+
+                if temporary_error:
+
+                    # Exponential backoff
+                    wait_time = 2 ** attempt
+
+                    time.sleep(wait_time)
+
+                    continue
+
+                # Other errors should not be retried repeatedly
+                break
+
+    return None
 
 # =========================================================
 # MULTILINGUAL UI TEXT
