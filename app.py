@@ -1,5 +1,7 @@
 import streamlit as st
+import time
 from google import genai
+
 
 # =========================================================
 # PAGE CONFIGURATION
@@ -11,6 +13,7 @@ st.set_page_config(
     layout="centered"
 )
 
+
 # =========================================================
 # GEMINI API CLIENT
 # =========================================================
@@ -19,11 +22,21 @@ client = genai.Client(
     api_key=st.secrets["GEMINI_API_KEY"]
 )
 
+
+# =========================================================
+# MODELS
+# =========================================================
+
+PRIMARY_MODEL = "gemini-3.6-flash"
+FALLBACK_MODEL = "gemini-3.5-flash"
+
+
 # =========================================================
 # MULTILINGUAL UI TEXT
 # =========================================================
 
 UI_TEXT = {
+
     "English": {
         "topic": "Select a health topic:",
         "question": "Ask Saathi a health-related question:",
@@ -39,7 +52,7 @@ UI_TEXT = {
         "placeholder": "उदाहरण: गर्भावस्था के दौरान किन चेतावनी संकेतों पर ध्यान देना चाहिए?",
         "button": "साथी से पूछें",
         "guidance": "🩺 साथी की सलाह",
-        "empty": "कृपया पहले अपना स्वास्थ्य संबंधी प्रश्न लिखें या बोलें।"
+        "empty": "कृपया पहले अपना स्वास्थ्य प्रश्न लिखें या बोलें।"
     },
 
     "Tamil": {
@@ -97,6 +110,7 @@ UI_TEXT = {
     }
 }
 
+
 # =========================================================
 # TITLE
 # =========================================================
@@ -112,6 +126,7 @@ st.info(
     "Saathi provides health information and referral guidance. "
     "It does not replace a qualified doctor or emergency medical service."
 )
+
 
 # =========================================================
 # LANGUAGE
@@ -133,11 +148,13 @@ language = st.selectbox(
 
 ui = UI_TEXT[language]
 
+
 # =========================================================
 # HEALTH TOPICS
 # =========================================================
 
 TOPIC_KEYS = [
+
     "Maternal Health",
     "Child Health",
     "Heart Health",
@@ -159,9 +176,12 @@ TOPIC_KEYS = [
     "First Aid",
     "Emergency Situations",
     "General Symptoms"
+
 ]
 
+
 TOPICS = {
+
     "English": TOPIC_KEYS,
 
     "Hindi": [
@@ -333,6 +353,7 @@ TOPICS = {
     ]
 }
 
+
 # =========================================================
 # TOPIC SELECTION
 # =========================================================
@@ -346,6 +367,7 @@ topic_index = TOPICS[language].index(selected_topic_display)
 
 topic = TOPIC_KEYS[topic_index]
 
+
 # =========================================================
 # TEXT QUESTION
 # =========================================================
@@ -355,6 +377,7 @@ question = st.text_area(
     placeholder=ui["placeholder"],
     height=120
 )
+
 
 # =========================================================
 # VOICE INPUT
@@ -372,19 +395,31 @@ audio_value = st.audio_input(
 
 voice_question = ""
 
+
 if audio_value is not None:
 
     try:
+
         audio_bytes = audio_value.read()
 
         if audio_bytes:
 
+            # Try to get the actual MIME type from Streamlit.
+            audio_mime = getattr(
+                audio_value,
+                "type",
+                "audio/wav"
+            )
+
             voice_response = client.models.generate_content(
-                model="gemini-3.6-flash",
+
+                model=PRIMARY_MODEL,
+
                 contents=[
                     {
                         "role": "user",
                         "parts": [
+
                             {
                                 "text": f"""
 Transcribe this audio recording.
@@ -403,18 +438,21 @@ Language context:
 {language}
 """
                             },
+
                             {
                                 "inline_data": {
-                                    "mime_type": "audio/wav",
+                                    "mime_type": audio_mime,
                                     "data": audio_bytes
                                 }
                             }
+
                         ]
                     }
                 ]
             )
 
             if voice_response.text:
+
                 voice_question = voice_response.text.strip()
 
                 st.success("🎤 Voice detected")
@@ -425,454 +463,303 @@ Language context:
 
     except Exception as e:
 
-        st.error("❌ Could not process the voice recording.")
+        st.warning(
+            "⚠️ Voice transcription is temporarily unavailable. "
+            "You can type the question instead."
+        )
 
-        st.error(str(e))
 
 # =========================================================
-# RED FLAG DETECTION
+# RED FLAG DATABASE
+# =========================================================
+#
+# IMPORTANT:
+# This is symptom/emergency detection, NOT diagnosis.
+#
+# We include disease names AND emergency symptoms because
+# users may type "heart attack" without typing "chest pain".
 # =========================================================
 
 RED_FLAGS = [
 
-    # English
+    # =====================================================
+    # HEART / CARDIAC EMERGENCIES
+    # =====================================================
+
+    "heart attack",
+    "heart attack symptoms",
+    "myocardial infarction",
+    "cardiac arrest",
+    "cardiac emergency",
+    "heart failure emergency",
     "severe chest pain",
     "chest pain",
+    "pressure in chest",
+    "tightness in chest",
+    "heaviness in chest",
+    "crushing chest pain",
+    "pain spreading to arm",
+    "pain spreading to jaw",
+    "pain spreading to shoulder",
+    "cold sweat with chest pain",
+    "palpitations with fainting",
+
+    # Hindi
+    "हार्ट अटैक",
+    "दिल का दौरा",
+    "हृदयाघात",
+    "सीने में तेज दर्द",
+    "सीने में दर्द",
+    "सीने में दबाव",
+    "सीने में जकड़न",
+    "बांह में फैलता दर्द",
+    "जबड़े में फैलता दर्द",
+
+    # Tamil
+    "மாரடைப்பு",
+    "இதயத் தாக்குதல்",
+    "மார்பில் கடுமையான வலி",
+    "மார்பு வலி",
+    "மார்பில் அழுத்தம்",
+    "மார்பு இறுக்கம்",
+
+    # Telugu
+    "గుండెపోటు",
+    "హార్ట్ అటాక్",
+    "తీవ్రమైన ఛాతీ నొప్పి",
+    "ఛాతీ నొప్పి",
+    "ఛాతీలో ఒత్తిడి",
+    "ఛాతీ బిగుతు",
+
+    # Malayalam
+    "ഹൃദയാഘാതം",
+    "ഹാർട്ട് അറ്റാക്ക്",
+    "കടുത്ത നെഞ്ചുവേദന",
+    "നെഞ്ചുവേദന",
+    "നെഞ്ചിൽ സമ്മർദ്ദം",
+    "നെഞ്ച് മുറുക്കം",
+
+    # Kannada
+    "ಹೃದಯಾಘಾತ",
+    "ಹಾರ್ಟ್ ಅಟ್ಯಾಕ್",
+    "ತೀವ್ರವಾದ ಎದೆ ನೋವು",
+    "ಎದೆ ನೋವು",
+    "ಎದೆಯಲ್ಲಿ ಒತ್ತಡ",
+    "ಎದೆ ಬಿಗಿತ",
+
+    # Bengali
+    "হার্ট অ্যাটাক",
+    "হৃদরোগে আক্রমণ",
+    "তীব্র বুক ব্যথা",
+    "বুকে ব্যথা",
+    "বুকে চাপ",
+    "বুক ধড়ফড়",
+
+    # Marathi
+    "हृदयविकाराचा झटका",
+    "हार्ट अटॅक",
+    "तीव्र छातीत दुखणे",
+    "छातीत दुखणे",
+    "छातीत दडपण",
+    "छातीत घट्टपणा",
+
+
+    # =====================================================
+    # STROKE
+    # =====================================================
+
+    "stroke",
+    "brain stroke",
+    "ischemic stroke",
+    "hemorrhagic stroke",
+    "face drooping",
+    "facial drooping",
+    "sudden weakness",
+    "one sided weakness",
+    "one side weakness",
+    "arm weakness",
+    "leg weakness",
+    "slurred speech",
+    "difficulty speaking",
+    "unable to speak",
+    "sudden confusion",
+    "sudden vision loss",
+    "sudden severe headache",
+
+    # Hindi
+    "स्ट्रोक",
+    "ब्रेन स्ट्रोक",
+    "लकवा",
+    "चेहरा टेढ़ा",
+    "अचानक कमजोरी",
+    "एक तरफ कमजोरी",
+    "बोलने में दिक्कत",
+    "अचानक भ्रम",
+    "अचानक दिखाई न देना",
+
+    # Tamil
+    "பக்கவாதம்",
+    "மூளை பக்கவாதம்",
+    "முகம் கோணல்",
+    "திடீர் பலவீனம்",
+    "ஒரு பக்க பலவீனம்",
+    "பேசுவதில் சிரமம்",
+    "திடீர் குழப்பம்",
+
+    # Telugu
+    "స్ట్రోక్",
+    "బ్రెయిన్ స్ట్రోక్",
+    "పక్షవాతం",
+    "ముఖం వంగిపోవడం",
+    "ఆకస్మిక బలహీనత",
+    "ఒక వైపు బలహీనత",
+    "మాట్లాడటంలో ఇబ్బంది",
+
+    # Malayalam
+    "സ്ട്രോക്ക്",
+    "ബ്രെയിൻ സ്ട്രോക്ക്",
+    "പക്ഷാഘാതം",
+    "മുഖം കോടുക",
+    "പെട്ടെന്നുള്ള ബലഹീനത",
+    "സംസാരിക്കാൻ ബുദ്ധിമുട്ട്",
+
+    # Kannada
+    "ಸ್ಟ್ರೋಕ್",
+    "ಬ್ರೈನ್ ಸ್ಟ್ರೋಕ್",
+    "ಪಾರ್ಶ್ವವಾಯು",
+    "ಮುಖ ವಾಲುವುದು",
+    "ಹಠಾತ್ ದೌರ್ಬಲ್ಯ",
+    "ಒಂದು ಬದಿಯ ದೌರ್ಬಲ್ಯ",
+    "ಮಾತನಾಡಲು ತೊಂದರೆ",
+
+    # Bengali
+    "স্ট্রোক",
+    "ব্রেন স্ট্রোক",
+    "পক্ষাঘাত",
+    "মুখ বেঁকে যাওয়া",
+    "হঠাৎ দুর্বলতা",
+    "এক পাশ দুর্বল",
+    "কথা বলতে অসুবিধা",
+
+    # Marathi
+    "स्ट्रोक",
+    "ब्रेन स्ट्रोक",
+    "पक्षाघात",
+    "चेहरा वाकडा",
+    "अचानक अशक्तपणा",
+    "एका बाजूची कमजोरी",
+    "बोलण्यात अडचण",
+
+
+    # =====================================================
+    # BREATHING EMERGENCIES
+    # =====================================================
+
     "difficulty breathing",
     "severe difficulty breathing",
     "cannot breathe",
-    "unconscious",
-    "loss of consciousness",
-    "not responding",
-    "seizure",
-    "convulsion",
-    "severe bleeding",
-    "heavy bleeding",
-    "vomiting blood",
-    "coughing blood",
-    "blood in vomit",
-    "severe abdominal pain",
-    "severe headache",
-    "sudden weakness",
-    "face drooping",
-    "slurred speech",
-    "difficulty speaking",
-    "paralysis",
+    "can't breathe",
+    "shortness of breath",
+    "severe breathlessness",
+    "choking",
+    "not breathing",
+    "stopped breathing",
     "blue lips",
     "blue skin",
-    "severe allergic reaction",
-    "swelling of face",
-    "swelling of throat",
-    "suicidal",
-    "suicide",
-    "self harm",
-    "severe burn",
-    "electric shock",
+    "severe asthma attack",
+    "asthma attack",
 
     # Hindi
-    "सीने में तेज दर्द",
-    "सीने में दर्द",
     "सांस लेने में कठिनाई",
     "सांस लेने में दिक्कत",
     "सांस नहीं आ रही",
-    "बेहोश",
-    "होश नहीं है",
-    "दौरा",
-    "दौरे",
-    "बहुत ज्यादा खून बहना",
-    "तेज रक्तस्राव",
-    "खून की उल्टी",
-    "खून की खांसी",
-    "पेट में तेज दर्द",
-    "बहुत तेज सिरदर्द",
-    "अचानक कमजोरी",
-    "चेहरा टेढ़ा",
-    "बोलने में दिक्कत",
-    "लकवा",
+    "सांस फूलना",
+    "दम घुटना",
+    "सांस बंद",
     "होंठ नीले",
-    "चेहरा सूजना",
-    "गला सूजना",
-    "आत्महत्या",
-    "खुद को नुकसान",
-    "गंभीर जलना",
-    "बिजली का झटका",
 
     # Tamil
-    "மார்பில் கடுமையான வலி",
-    "மார்பு வலி",
     "சுவாசிப்பதில் சிரமம்",
     "மூச்சு விடுவதில் சிரமம்",
     "மூச்சு விட முடியவில்லை",
-    "நினைவிழந்த",
-    "நினைவிழப்பு",
-    "சுயநினைவு இல்லை",
-    "வலிப்பு",
-    "கடுமையான இரத்தப்போக்கு",
-    "அதிக இரத்தப்போக்கு",
-    "இரத்த வாந்தி",
-    "இரத்தம் இருமல்",
-    "வயிற்றில் கடுமையான வலி",
-    "கடுமையான தலைவலி",
-    "திடீர் பலவீனம்",
-    "முகம் கோணல்",
-    "பேசுவதில் சிரமம்",
-    "பக்கவாதம்",
-    "உதடுகள் நீலமாக",
-    "முகம் வீக்கம்",
-    "தொண்டை வீக்கம்",
-    "தற்கொலை",
-    "சுய காயம்",
-    "கடுமையான தீக்காயம்",
-    "மின்சார அதிர்ச்சி",
+    "மூச்சுத்திணறல்",
+    "மூச்சு நின்றுவிட்டது",
 
     # Telugu
-    "తీవ్రమైన ఛాతీ నొప్పి",
-    "ఛాతీ నొప్పి",
     "శ్వాస తీసుకోవడంలో ఇబ్బంది",
     "ఊపిరి తీసుకోవడం కష్టం",
     "ఊపిరి తీసుకోలేకపోతున్నాను",
+    "ఊపిరి ఆడటం లేదు",
+    "ఊపిరి ఆగిపోయింది",
+
+    # Malayalam
+    "ശ്വസിക്കാൻ ബുദ്ധിമുട്ട്",
+    "ശ്വാസം എടുക്കാൻ കഴിയുന്നില്ല",
+    "ശ്വാസം മുട്ടൽ",
+    "ശ്വാസം നിലച്ചു",
+
+    # Kannada
+    "ಉಸಿರಾಟದ ತೊಂದರೆ",
+    "ಉಸಿರಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ",
+    "ಉಸಿರುಗಟ್ಟುವಿಕೆ",
+    "ಉಸಿರು ನಿಂತಿದೆ",
+
+    # Bengali
+    "শ্বাস নিতে অসুবিধা",
+    "শ্বাস নিতে পারছি না",
+    "শ্বাসকষ্ট",
+    "শ্বাস বন্ধ",
+
+    # Marathi
+    "श्वास घेण्यास त्रास",
+    "श्वास घेता येत नाही",
+    "श्वास लागणे",
+    "श्वास बंद",
+
+
+    # =====================================================
+    # UNCONSCIOUSNESS / SEIZURE
+    # =====================================================
+
+    "unconscious",
+    "unresponsive",
+    "not responding",
+    "loss of consciousness",
+    "fainted and not waking",
+    "seizure",
+    "convulsion",
+    "fits",
+    "continuous seizure",
+    "repeated seizures",
+
+    # Hindi
+    "बेहोश",
+    "होश नहीं है",
+    "प्रतिक्रिया नहीं दे रहा",
+    "दौरा",
+    "दौरे",
+    "फिट",
+
+    # Tamil
+    "நினைவிழந்த",
+    "சுயநினைவு இல்லை",
+    "வலிப்பு",
+    "தொடர் வலிப்பு",
+
+    # Telugu
     "స్పృహ కోల్పోవడం",
     "స్పృహలో లేరు",
     "మూర్ఛ",
-    "తీవ్రమైన రక్తస్రావం",
-    "ఎక్కువ రక్తస్రావం",
-    "రక్తం వాంతి",
-    "రక్తం దగ్గు",
-    "తీవ్రమైన కడుపు నొప్పి",
-    "తీవ్రమైన తలనొప్పి",
-    "ఆకస్మిక బలహీనత",
-    "మాట్లాడటంలో ఇబ్బంది",
-    "పక్షవాతం",
-    "పెదవులు నీలం",
-    "ముఖం వాపు",
-    "గొంతు వాపు",
-    "ఆత్మహత్య",
-    "స్వీయ హాని",
-    "తీవ్రమైన కాలిన గాయం",
-    "విద్యుత్ షాక్",
+    "ఫిట్స్",
 
     # Malayalam
-    "കടുത്ത നെഞ്ചുവേദന",
-    "നെഞ്ചുവേദന",
-    "ശ്വസിക്കാൻ ബുദ്ധിമുട്ട്",
-    "ശ്വാസം എടുക്കാൻ കഴിയുന്നില്ല",
     "ബോധരഹിതൻ",
     "ബോധം നഷ്ടപ്പെടൽ",
     "അപസ്മാരം",
-    "കടുത്ത രക്തസ്രാവം",
-    "അമിതമായ രക്തസ്രാവം",
-    "രക്തം ഛർദ്ദിക്കുക",
-    "രക്തം ചുമയ്ക്കുക",
-    "കടുത്ത വയറുവേദന",
-    "കടുത്ത തലവേദന",
-    "പെട്ടെന്നുള്ള ബലഹീനത",
-    "സംസാരിക്കാൻ ബുദ്ധിമുട്ട്",
-    "പക്ഷാഘാതം",
-    "ചുണ്ടുകൾ നീലനിറം",
-    "മുഖം വീക്കം",
-    "തൊണ്ട വീക്കം",
-    "ആത്മഹത്യ",
-    "സ്വയം ഉപദ്രവിക്കൽ",
-    "ഗുരുതരമായ പൊള്ളൽ",
-    "വൈദ്യുതാഘാതം",
+    "വലിപ്പ്",
 
     # Kannada
-    "ತೀವ್ರವಾದ ಎದೆ ನೋವು",
-    "ಎದೆ ನೋವು",
-    "ಉಸಿರಾಟದ ತೊಂದರೆ",
-    "ಉಸಿರಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ",
     "ಪ್ರಜ್ಞಾಹೀನ",
     "ಪ್ರಜ್ಞೆ ಕಳೆದುಕೊಳ್ಳುವುದು",
     "ಅಪಸ್ಮಾರ",
-    "ತೀವ್ರ ರಕ್ತಸ್ರಾವ",
-    "ಹೆಚ್ಚಿನ ರಕ್ತಸ್ರಾವ",
-    "ರಕ್ತ ವಾಂತಿ",
-    "ರಕ್ತ ಕೆಮ್ಮು",
-    "ತೀವ್ರ ಹೊಟ್ಟೆ ನೋವು",
-    "ತೀವ್ರ ತಲೆನೋವು",
-    "ಹಠಾತ್ ದೌರ್ಬಲ್ಯ",
-    "ಮಾತನಾಡಲು ತೊಂದರೆ",
-    "ಪಾರ್ಶ್ವವಾಯು",
-    "ತುಟಿಗಳು ನೀಲಿ",
-    "ಮುಖದ ಊತ",
-    "ಗಂಟಲಿನ ಊತ",
-    "ಆತ್ಮಹತ್ಯೆ",
-    "ಸ್ವಯಂ ಹಾನಿ",
-    "ತೀವ್ರ ಸುಟ್ಟ ಗಾಯ",
-    "ವಿದ್ಯುತ್ ಆಘಾತ",
-
-    # Bengali
-    "তীব্র বুক ব্যথা",
-    "বুকে ব্যথা",
-    "শ্বাস নিতে অসুবিধা",
-    "শ্বাস নিতে পারছি না",
-    "অজ্ঞান",
-    "চেতনা হারানো",
-    "খিঁচুনি",
-    "তীব্র রক্তপাত",
-    "অতিরিক্ত রক্তপাত",
-    "রক্ত বমি",
-    "রক্ত কাশি",
-    "তীব্র পেট ব্যথা",
-    "তীব্র মাথাব্যথা",
-    "হঠাৎ দুর্বলতা",
-    "কথা বলতে অসুবিধা",
-    "পক্ষাঘাত",
-    "ঠোঁট নীল",
-    "মুখ ফুলে যাওয়া",
-    "গলা ফুলে যাওয়া",
-    "আত্মহত্যা",
-    "নিজেকে আঘাত করা",
-    "গুরুতর পোড়া",
-    "বৈদ্যুতিক শক",
-
-    # Marathi
-    "तीव्र छातीत दुखणे",
-    "छातीत दुखणे",
-    "श्वास घेण्यास त्रास",
-    "श्वास घेता येत नाही",
-    "बेशुद्ध",
-    "शुद्ध हरपणे",
-    "फिट",
-    "तीव्र रक्तस्त्राव",
-    "जास्त रक्तस्त्राव",
-    "रक्ताची उलटी",
-    "रक्ताची खोकला",
-    "तीव्र पोटदुखी",
-    "तीव्र डोकेदुखी",
-    "अचानक अशक्तपणा",
-    "बोलण्यात अडचण",
-    "पक्षाघात",
-    "ओठ निळे पडणे",
-    "चेहऱ्यावर सूज",
-    "घशावर सूज",
-    "आत्महत्या",
-    "स्वतःला इजा करणे",
-    "गंभीर भाजणे",
-    "वीज लागणे"
-]
-
-# =========================================================
-# RED FLAG FUNCTION
-# =========================================================
-
-def detect_red_flags(text):
-
-    text_lower = text.lower()
-
-    detected = []
-
-    for flag in RED_FLAGS:
-
-        if flag.lower() in text_lower:
-            detected.append(flag)
-
-    return detected
-
-
-# =========================================================
-# RED FLAG MESSAGES
-# =========================================================
-
-RED_FLAG_MESSAGES = {
-
-    "English": (
-        "🚨 RED FLAG / URGENT WARNING",
-        "This question contains a possible warning sign that may require urgent medical evaluation."
-    ),
-
-    "Hindi": (
-        "🚨 गंभीर चेतावनी / तत्काल चिकित्सा सहायता",
-        "आपके प्रश्न में एक संभावित चेतावनी संकेत है जिसके लिए तुरंत चिकित्सकीय जांच की आवश्यकता हो सकती है।"
-    ),
-
-    "Tamil": (
-        "🚨 ஆபத்து அறிகுறி / அவசர எச்சரிக்கை",
-        "உங்கள் கேள்வியில் அவசர மருத்துவ பரிசோதனை தேவைப்படக்கூடிய ஆபத்து அறிகுறி உள்ளது."
-    ),
-
-    "Telugu": (
-        "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక",
-        "మీ ప్రశ్నలో తక్షణ వైద్య పరీక్ష అవసరమయ్యే ప్రమాద సూచన ఉండవచ్చు."
-    ),
-
-    "Malayalam": (
-        "🚨 അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്",
-        "നിങ്ങളുടെ ചോദ്യത്തിൽ അടിയന്തര മെഡിക്കൽ പരിശോധന ആവശ്യമായേക്കാവുന്ന ഒരു അപകട സൂചനയുണ്ട്."
-    ),
-
-    "Kannada": (
-        "🚨 ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ",
-        "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯಲ್ಲಿ ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆಯ ಅಗತ್ಯವಿರುವ ಅಪಾಯದ ಸೂಚನೆ ಇರಬಹುದು."
-    ),
-
-    "Bengali": (
-        "🚨 বিপদের লক্ষণ / জরুরি সতর্কতা",
-        "আপনার প্রশ্নে এমন একটি সম্ভাব্য বিপদের লক্ষণ রয়েছে যার জন্য জরুরি চিকিৎসা পরীক্ষার প্রয়োজন হতে পারে।"
-    ),
-
-    "Marathi": (
-        "🚨 धोक्याची चिन्हे / तातडीची सूचना",
-        "तुमच्या प्रश्नामध्ये तातडीच्या वैद्यकीय तपासणीची गरज असू शकणारे धोक्याचे चिन्ह आहे."
-    )
-}
-
-# =========================================================
-# ASK SAATHI
-# =========================================================
-
-if st.button(ui["button"], type="primary"):
-
-    # -----------------------------------------------------
-    # USE TEXT QUESTION OR VOICE QUESTION
-    # -----------------------------------------------------
-
-    final_question = question.strip()
-
-    if not final_question and voice_question:
-        final_question = voice_question.strip()
-
-    # -----------------------------------------------------
-    # EMPTY QUESTION
-    # -----------------------------------------------------
-
-    if not final_question:
-
-        st.warning(ui["empty"])
-
-    else:
-
-        # -------------------------------------------------
-        # SHOW QUESTION BEING PROCESSED
-        # -------------------------------------------------
-
-        st.info(
-            f"📝 Question received:\n\n{final_question}"
-        )
-
-        # -------------------------------------------------
-        # RED FLAG CHECK
-        # -------------------------------------------------
-
-        detected_flags = detect_red_flags(final_question)
-
-        if detected_flags:
-
-            title, message = RED_FLAG_MESSAGES[language]
-
-            st.error(
-                f"{title}\n\n{message}"
-            )
-
-            st.warning(
-                "⚠️ Do not rely only on this AI tool. "
-                "If the person is seriously unwell, "
-                "contact appropriate emergency medical services "
-                "or refer the person to the nearest suitable healthcare facility immediately."
-            )
-
-        # -------------------------------------------------
-        # GEMINI PROMPT
-        # -------------------------------------------------
-
-        prompt = f"""
-You are Saathi AI Health Agent.
-
-You are a digital health-information assistant designed
-to support frontline health workers such as ASHA and ANM workers in India.
-
-Selected health topic:
-{topic}
-
-Selected language:
-{language}
-
-Health question:
-{final_question}
-
-IMPORTANT LANGUAGE RULE:
-Respond ONLY in {language}.
-
-Use simple and practical language that a frontline
-health worker can understand and explain to a patient.
-
-SAFETY RULES:
-
-1. Do not diagnose the patient.
-
-2. Do not prescribe medicines.
-
-3. Do not provide medicine dosages.
-
-4. Do not replace a qualified doctor or healthcare professional.
-
-5. Mention important warning signs when relevant.
-
-6. If the symptoms could indicate an emergency,
-   clearly recommend urgent medical evaluation.
-
-7. Do not tell the user to wait when serious warning signs
-   are present.
-
-8. Encourage referral to an appropriate healthcare facility
-   or qualified healthcare professional when necessary.
-
-9. Give practical and safe health information.
-
-10. Focus on the selected health topic.
-
-11. The answer should be useful for a frontline health worker
-    during a community visit.
-
-STRUCTURE YOUR RESPONSE:
-
-### 1. What it may mean
-Explain the possible general causes or health concern.
-
-### 2. Important warning signs
-List symptoms that require urgent attention.
-
-### 3. What the health worker can do
-Give safe first-level actions such as checking available
-vital measurements, asking relevant questions, providing
-basic supportive guidance, and arranging referral when needed.
-
-### 4. When to refer
-Clearly explain when the person should be referred
-to a doctor, health centre, hospital, or emergency service.
-
-### 5. Safety note
-Remind the health worker that this is information support
-and not a diagnosis or replacement for professional care.
-"""
-
-        # -------------------------------------------------
-        # GEMINI RESPONSE
-        # -------------------------------------------------
-
-        try:
-
-            with st.spinner("🩺 Saathi is preparing guidance..."):
-
-                response = client.models.generate_content(
-                    model="gemini-3.6-flash",
-                    contents=prompt
-                )
-
-            if response.text:
-
-                st.success(ui["guidance"])
-
-                st.write(response.text)
-
-            else:
-
-                st.error(
-                    "❌ Saathi did not receive a response. Please try again."
-                )
-
-        except Exception as e:
-
-            st.error("❌ Saathi encountered an error.")
-
-            st.error(str(e))
+    "
