@@ -1254,7 +1254,6 @@ except Exception as e:
             # -------------------------------------------------
             # 503 / TEMPORARY GEMINI ERROR
             # -------------------------------------------------
-
             if (
                 "503" in error_upper
                 or "UNAVAILABLE" in error_upper
