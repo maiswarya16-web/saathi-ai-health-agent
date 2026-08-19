@@ -1183,44 +1183,21 @@ try:
             "Please try again later."
         )
 
-except Exception as e:
-    error_message = str(e).lower()
+        except Exception as e:
 
-    if (
-        "quota" in error_message
-        or "rate limit" in error_message
-        or "resource exhausted" in error_message
-        or "429" in error_message
-    ):
-        st.warning(
-            "⚠️ Saathi's AI request limit has been reached."
-        )
-        st.info(
-            "Please try again after the API limit becomes available."
-        )
+            # Convert the original error into text FIRST
+            error_text = str(e)
+            error_upper = error_text.upper()
 
-    elif (
-        "503" in error_message
-        or "unavailable" in error_message
-        or "overloaded" in error_message
-    ):
-        st.warning(
-            "⚠️ Saathi's AI service is temporarily unavailable."
-        )
-        st.info(
-            "Please wait a little and try again."
-        )
+            # =================================================
+            # GEMINI 503 / TEMPORARY UNAVAILABLE
+            # =================================================
 
-    else:
-        st.error(
-            "❌ Saathi encountered a temporary error."
-        )
-        st.info(
-            "Please check your API configuration and try again."
-        )
-    if (
+            if (
                 "503" in error_upper
                 or "UNAVAILABLE" in error_upper
+                or "HIGH DEMAND" in error_upper
+                or "OVERLOADED" in error_upper
             ):
 
                 st.error(
@@ -1229,62 +1206,47 @@ except Exception as e:
 
                 st.info(
                     "Gemini is currently experiencing high demand. "
-                    "Saathi automatically retried the request several times. "
-                    "Please try again after a short time."
+                    "Please wait a little and try again."
                 )
 
+                with st.expander("Technical error details"):
+                    st.code(error_text)
 
-            # -------------------------------------------------
-            # 429 / RATE LIMIT
-            # -------------------------------------------------
+            # =================================================
+            # GEMINI 429 / API LIMIT
+            # =================================================
 
-    elif (
+            elif (
                 "429" in error_upper
                 or "RESOURCE_EXHAUSTED" in error_upper
+                or "RATE LIMIT" in error_upper
+                or "QUOTA" in error_upper
             ):
 
-                st.error(
-                    "⚠️ Gemini API request limit reached."
+                st.warning(
+                    "⏳ Gemini API request limit reached."
                 )
 
                 st.info(
-                    "Please wait for the API limit to reset "
-                    "and then try again."
+                    "Please try again after the API limit becomes available."
                 )
 
+                with st.expander("Technical error details"):
+                    st.code(error_text)
 
-            # -------------------------------------------------
-            # OTHER SERVER ERRORS
-            # -------------------------------------------------
+            # =================================================
+            # OTHER GEMINI ERRORS
+            # =================================================
 
-    elif (
-                "500" in error_upper
-                or "502" in error_upper
-                or "504" in error_upper
-            ):
+            else:
 
                 st.error(
-                    "⚠️ Saathi's AI service is temporarily unavailable."
+                    "❌ Saathi encountered a temporary error."
                 )
 
                 st.info(
-                    "This appears to be a temporary Gemini server "
-                    "problem. Please try again shortly."
+                    "Please check your API configuration and try again."
                 )
 
-
-            # -------------------------------------------------
-            # OTHER ERRORS
-            # -------------------------------------------------
-
-    else:
-
-                st.error(
-                    "❌ Saathi encountered a technical error."
-                )
-
-                with st.expander(
-                    "Technical error details"
-                ):
-
+                with st.expander("Technical error details"):
                     st.code(error_text)
