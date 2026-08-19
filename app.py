@@ -324,7 +324,15 @@ question = st.text_area(
     ui["question"],
     placeholder=ui["placeholder"]
 )
+# -----------------------------
+# VOICE INPUT
+# -----------------------------
 
+st.subheader("🎤 Voice Input")
+
+audio_value = st.audio_input(
+    "Tap the microphone and speak your health question:"
+)
 # =========================================================
 # RED FLAG DETECTION
 # =========================================================
