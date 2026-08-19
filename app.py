@@ -1277,7 +1277,7 @@ except Exception as e:
             # OTHER ERRORS
             # -------------------------------------------------
 
-            else:
+    else:
 
                 st.error(
                     "❌ Saathi encountered a technical error."
