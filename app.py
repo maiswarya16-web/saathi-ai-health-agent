@@ -31,7 +31,7 @@ st.write(
 # LANGUAGE
 # -----------------------------
 language = st.selectbox(
-    "🌐 Select your language:",
+    ui["language"]
     [
         "English",
         "Hindi",
@@ -48,7 +48,7 @@ language = st.selectbox(
 # HEALTH TOPIC
 # -----------------------------
 topic = st.selectbox(
-    "Select a health topic:",
+    ui["topic"]
     [
         "Maternal Health",
         "Child Health",
@@ -72,8 +72,8 @@ topic = st.selectbox(
 # QUESTION
 # -----------------------------
 question = st.text_area(
-    "Ask Saathi a health-related question:",
-    placeholder="Example: What warning signs should I look for during pregnancy?"
+    ui["question"]
+    ui["placeholder"]
 )
 
 # -----------------------------
@@ -386,15 +386,101 @@ RED_FLAG_MESSAGES = {
         "आपत्कालीन वैद्यकीय मदत घ्या."
     )
 }
+# -----------------------------
+# MULTILINGUAL UI TEXT
+# -----------------------------
 
+UI_TEXT = {
+    "English": {
+        "language": "🌐 Select your language:",
+        "topic": "Select a health topic:",
+        "question": "Ask Saathi a health-related question:",
+        "placeholder": "Example: What warning signs should I look for during pregnancy?",
+        "button": "Ask Saathi",
+        "guidance": "🩺 Saathi's Guidance",
+        "empty": "Please enter a health question first."
+    },
+
+    "Hindi": {
+        "language": "🌐 अपनी भाषा चुनें:",
+        "topic": "स्वास्थ्य विषय चुनें:",
+        "question": "साथी से स्वास्थ्य संबंधी प्रश्न पूछें:",
+        "placeholder": "उदाहरण: गर्भावस्था के दौरान किन चेतावनी संकेतों पर ध्यान देना चाहिए?",
+        "button": "साथी से पूछें",
+        "guidance": "🩺 साथी की सलाह",
+        "empty": "कृपया पहले अपना स्वास्थ्य संबंधी प्रश्न दर्ज करें।"
+    },
+
+    "Tamil": {
+        "language": "🌐 உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்:",
+        "topic": "சுகாதார தலைப்பைத் தேர்ந்தெடுக்கவும்:",
+        "question": "சாத்தியிடம் சுகாதார கேள்வியைக் கேளுங்கள்:",
+        "placeholder": "உதாரணம்: கர்ப்ப காலத்தில் கவனிக்க வேண்டிய ஆபத்து அறிகுறிகள் என்ன?",
+        "button": "சாத்தியிடம் கேளுங்கள்",
+        "guidance": "🩺 சாத்தியின் வழிகாட்டுதல்",
+        "empty": "முதலில் உங்கள் சுகாதார கேள்வியை உள்ளிடவும்."
+    },
+
+    "Telugu": {
+        "language": "🌐 మీ భాషను ఎంచుకోండి:",
+        "topic": "ఆరోగ్య అంశాన్ని ఎంచుకోండి:",
+        "question": "సాతీని ఆరోగ్య ప్రశ్న అడగండి:",
+        "placeholder": "ఉదాహరణ: గర్భధారణ సమయంలో ఏ ప్రమాద సంకేతాలను గమనించాలి?",
+        "button": "సాతీని అడగండి",
+        "guidance": "🩺 సాతీ మార్గదర్శకం",
+        "empty": "దయచేసి ముందుగా మీ ఆరోగ్య ప్రశ్నను నమోదు చేయండి."
+    },
+
+    "Malayalam": {
+        "language": "🌐 നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക:",
+        "topic": "ആരോഗ്യ വിഷയം തിരഞ്ഞെടുക്കുക:",
+        "question": "സാത്തിയോട് ആരോഗ്യ ചോദ്യം ചോദിക്കുക:",
+        "placeholder": "ഉദാഹരണം: ഗർഭകാലത്ത് ശ്രദ്ധിക്കേണ്ട അപകട സൂചനകൾ എന്തൊക്കെയാണ്?",
+        "button": "സാത്തിയോട് ചോദിക്കുക",
+        "guidance": "🩺 സാത്തിയുടെ മാർഗനിർദ്ദേശം",
+        "empty": "ദയവായി ആദ്യം നിങ്ങളുടെ ആരോഗ്യ ചോദ്യം നൽകുക."
+    },
+
+    "Kannada": {
+        "language": "🌐 ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+        "topic": "ಆರೋಗ್ಯ ವಿಷಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+        "question": "ಸಾಥಿಗೆ ಆರೋಗ್ಯ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ:",
+        "placeholder": "ಉದಾಹರಣೆ: ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಯಾವ ಅಪಾಯದ ಸೂಚನೆಗಳನ್ನು ಗಮನಿಸಬೇಕು?",
+        "button": "ಸಾಥಿಯನ್ನು ಕೇಳಿ",
+        "guidance": "🩺 ಸಾಥಿಯ ಮಾರ್ಗದರ್ಶನ",
+        "empty": "ದಯವಿಟ್ಟು ಮೊದಲು ನಿಮ್ಮ ಆರೋಗ್ಯ ಪ್ರಶ್ನೆಯನ್ನು ನಮೂದಿಸಿ."
+    },
+
+    "Bengali": {
+        "language": "🌐 আপনার ভাষা নির্বাচন করুন:",
+        "topic": "স্বাস্থ্য বিষয় নির্বাচন করুন:",
+        "question": "সাথীকে স্বাস্থ্য সম্পর্কিত প্রশ্ন করুন:",
+        "placeholder": "উদাহরণ: গর্ভাবস্থায় কোন বিপদের লক্ষণগুলির দিকে নজর রাখা উচিত?",
+        "button": "সাথীকে জিজ্ঞাসা করুন",
+        "guidance": "🩺 সাথীর নির্দেশনা",
+        "empty": "দয়া করে প্রথমে আপনার স্বাস্থ্য প্রশ্ন লিখুন।"
+    },
+
+    "Marathi": {
+        "language": "🌐 तुमची भाषा निवडा:",
+        "topic": "आरोग्य विषय निवडा:",
+        "question": "साथीला आरोग्याशी संबंधित प्रश्न विचारा:",
+        "placeholder": "उदाहरण: गर्भधारणेदरम्यान कोणती धोक्याची चिन्हे लक्षात घ्यावीत?",
+        "button": "साथीला विचारा",
+        "guidance": "🩺 साथीचे मार्गदर्शन",
+        "empty": "कृपया प्रथम तुमचा आरोग्य प्रश्न लिहा."
+    }
+}
+
+ui = UI_TEXT[language]
 
 # -----------------------------
 # ASK SAATHI
 # -----------------------------
-if st.button("Ask Saathi"):
+if  st.button(ui["button"]):
 
     if not question.strip():
-        st.warning("Please enter a health question first.")
+        st.warning(ui["empty"])
 
     else:
 
@@ -461,7 +547,7 @@ Structure the answer as:
 
             answer = response.text
 
-            st.success("🩺 Saathi's Guidance")
+            st.success(ui["guidance"])
             st.write(answer)
 
         except Exception as e:
