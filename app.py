@@ -1163,12 +1163,6 @@ to a doctor, health centre, hospital, or emergency service.
 Remind the health worker that this is information support
 and not a diagnosis or replacement for professional care.
 """
-
-
-        # -------------------------------------------------
-        # GEMINI RESPONSE WITH RETRY
-        # -------------------------------------------------
-
         # -------------------------------------------------
 # GEMINI RESPONSE WITH SAFE ERROR HANDLING
 # -------------------------------------------------
@@ -1224,9 +1218,7 @@ except Exception as e:
         st.info(
             "Please check your API configuration and try again."
         )
-            # -------------------------------------------------
-            # 503 / TEMPORARY GEMINI ERROR
-            # -------------------------------------------------
+           
             if (
                 "503" in error_upper
                 or "UNAVAILABLE" in error_upper
