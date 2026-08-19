@@ -73,15 +73,12 @@ topic = st.selectbox(
 # -----------------------------
 question = st.text_area(
     "Ask Saathi a health-related question:",
-    placeholder=(
-        "Example: What warning signs should I look for during pregnancy?"
-    )
+    placeholder="Example: What warning signs should I look for during pregnancy?"
 )
 
 # -----------------------------
-# MULTILINGUAL RED FLAG DETECTION
+# RED FLAG KEYWORDS
 # -----------------------------
-
 RED_FLAGS = [
     # English
     "severe chest pain",
@@ -314,11 +311,92 @@ def detect_red_flags(text):
 
 
 # -----------------------------
+# RED FLAG MESSAGES
+# -----------------------------
+RED_FLAG_MESSAGES = {
+    "English": (
+        "🚨 RED FLAG / URGENT WARNING\n\n"
+        "The question contains a possible warning sign "
+        "that may require urgent medical evaluation.",
+        "Please do not rely only on this AI tool. "
+        "Seek appropriate emergency medical care immediately "
+        "if the person is seriously unwell."
+    ),
+
+    "Hindi": (
+        "🚨 गंभीर चेतावनी / तत्काल चिकित्सा सहायता\n\n"
+        "आपके प्रश्न में एक संभावित चेतावनी संकेत है "
+        "जिसके लिए तुरंत चिकित्सकीय जांच की आवश्यकता हो सकती है।",
+        "केवल इस AI टूल पर निर्भर न रहें। "
+        "यदि व्यक्ति गंभीर रूप से अस्वस्थ है, तो तुरंत "
+        "उचित आपातकालीन चिकित्सा सहायता लें।"
+    ),
+
+    "Tamil": (
+        "🚨 ஆபத்து அறிகுறி / அவசர எச்சரிக்கை\n\n"
+        "உங்கள் கேள்வியில் அவசர மருத்துவ பரிசோதனை "
+        "தேவைப்படக்கூடிய ஆபத்து அறிகுறி உள்ளது.",
+        "இந்த AI கருவியை மட்டும் நம்ப வேண்டாம். "
+        "நபர் மிகவும் உடல்நிலை பாதிக்கப்பட்டிருந்தால், "
+        "உடனடியாக அவசர மருத்துவ உதவியைப் பெறுங்கள்."
+    ),
+
+    "Telugu": (
+        "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక\n\n"
+        "మీ ప్రశ్నలో తక్షణ వైద్య పరీక్ష అవసరమయ్యే "
+        "ప్రమాద సూచన ఉండవచ్చు.",
+        "ఈ AI సాధనంపై మాత్రమే ఆధారపడవద్దు. "
+        "వ్యక్తి తీవ్రంగా అనారోగ్యంగా ఉంటే వెంటనే "
+        "అత్యవసర వైద్య సహాయం పొందండి."
+    ),
+
+    "Malayalam": (
+        "🚨 അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്\n\n"
+        "നിങ്ങളുടെ ചോദ്യത്തിൽ അടിയന്തര മെഡിക്കൽ പരിശോധന "
+        "ആവശ്യമായേക്കാവുന്ന ഒരു അപകട സൂചനയുണ്ട്.",
+        "ഈ AI ഉപകരണത്തെ മാത്രം ആശ്രയിക്കരുത്. "
+        "വ്യക്തിക്ക് ഗുരുതരമായ അസുഖമുണ്ടെങ്കിൽ ഉടൻ "
+        "അടിയന്തര മെഡിക്കൽ സഹായം തേടുക."
+    ),
+
+    "Kannada": (
+        "🚨 ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ\n\n"
+        "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯಲ್ಲಿ ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆಯ "
+        "ಅಗತ್ಯವಿರುವ ಅಪಾಯದ ಸೂಚನೆ ಇರಬಹುದು.",
+        "ಈ AI ಸಾಧನವನ್ನು ಮಾತ್ರ ಅವಲಂಬಿಸಬೇಡಿ. "
+        "ವ್ಯಕ್ತಿಯ ಆರೋಗ್ಯ ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ ತಕ್ಷಣ "
+        "ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ."
+    ),
+
+    "Bengali": (
+        "🚨 বিপদের লক্ষণ / জরুরি সতর্কতা\n\n"
+        "আপনার প্রশ্নে এমন একটি সম্ভাব্য বিপদের লক্ষণ রয়েছে "
+        "যার জন্য জরুরি চিকিৎসা পরীক্ষার প্রয়োজন হতে পারে।",
+        "শুধু এই AI টুলের উপর নির্ভর করবেন না। "
+        "ব্যক্তি গুরুতর অসুস্থ হলে অবিলম্বে "
+        "জরুরি চিকিৎসা সহায়তা নিন।"
+    ),
+
+    "Marathi": (
+        "🚨 धोक्याची चिन्हे / तातडीची सूचना\n\n"
+        "तुमच्या प्रश्नामध्ये तातडीच्या वैद्यकीय तपासणीची "
+        "गरज असू शकणारे धोक्याचे चिन्ह आहे.",
+        "फक्त या AI साधनावर अवलंबून राहू नका. "
+        "व्यक्ती गंभीर आजारी असल्यास त्वरित "
+        "आपत्कालीन वैद्यकीय मदत घ्या."
+    )
+}
+
+
+# -----------------------------
 # ASK SAATHI
 # -----------------------------
 if st.button("Ask Saathi"):
 
-    if question.strip():
+    if not question.strip():
+        st.warning("Please enter a health question first.")
+
+    else:
 
         detected_flags = detect_red_flags(question)
 
@@ -326,185 +404,6 @@ if st.button("Ask Saathi"):
         # RED FLAG ALERT
         # -----------------------------
         if detected_flags:
-           RED_FLAG_MESSAGES = {
-        "English": (
-            "🚨 RED FLAG / URGENT WARNING\n\n"
-            "The question contains a possible warning sign "
-            "that may require urgent medical evaluation.",
-            "Please do not rely only on this AI tool. "
-            "Seek appropriate emergency medical care immediately "
-            "if the person is seriously unwell."
-        ),
-
-        "Hindi": (
-            "🚨 गंभीर चेतावनी / तत्काल चिकित्सा सहायता\n\n"
-            "आपके प्रश्न में एक संभावित चेतावनी संकेत है "
-            "जिसके लिए तुरंत चिकित्सकीय जांच की आवश्यकता हो सकती है।",
-            "केवल इस AI टूल पर निर्भर न रहें। "
-            "यदि व्यक्ति गंभीर रूप से अस्वस्थ है, तो तुरंत "
-            "उचित आपातकालीन चिकित्सा सहायता लें।"
-        ),
-
-        "Tamil": (
-            "🚨 ஆபத்து அறிகுறி / அவசர எச்சரிக்கை\n\n"
-            "உங்கள் கேள்வியில் அவசர மருத்துவ பரிசோதனை "
-            "தேவைப்படக்கூடிய ஆபத்து அறிகுறி உள்ளது.",
-            "இந்த AI கருவியை மட்டும் நம்ப வேண்டாம். "
-            "நபர் மிகவும் உடல்நிலை பாதிக்கப்பட்டிருந்தால், "
-            "உடனடியாக அவசர மருத்துவ உதவியைப் பெறுங்கள்."
-        ),
-
-        "Telugu": (
-            "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక\n\n"
-            "మీ ప్రశ్నలో తక్షణ వైద్య పరీక్ష అవసరమయ్యే "
-            "ప్రమాద సూచన ఉండవచ్చు.",
-            "ఈ AI సాధనంపై మాత్రమే ఆధారపడవద్దు. "
-            "వ్యక్తి తీవ్రంగా అనారోగ్యంగా ఉంటే వెంటనే "
-            "అత్యవసర వైద్య సహాయం పొందండి."
-        ),
-
-        "Malayalam": (
-            "🚨 അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്\n\n"
-            "നിങ്ങളുടെ ചോദ്യത്തിൽ അടിയന്തര മെഡിക്കൽ പരിശോധന "
-            "ആവശ്യമായേക്കാവുന്ന ഒരു അപകട സൂചനയുണ്ട്.",
-            "ഈ AI ഉപകരണത്തെ മാത്രം ആശ്രയിക്കരുത്. "
-            "വ്യക്തിക്ക് ഗുരുതരമായ അസുഖമുണ്ടെങ്കിൽ ഉടൻ "
-            "അടിയന്തര മെഡിക്കൽ സഹായം തേടുക."
-        ),
-
-        "Kannada": (
-            "🚨 ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ\n\n"
-            "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯಲ್ಲಿ ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆಯ "
-            "ಅಗತ್ಯವಿರುವ ಅಪಾಯದ ಸೂಚನೆ ಇರಬಹುದು.",
-            "ಈ AI ಸಾಧನವನ್ನು ಮಾತ್ರ ಅವಲಂಬಿಸಬೇಡಿ. "
-            "ವ್ಯಕ್ತಿಯ ಆರೋಗ್ಯ ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ ತಕ್ಷಣ "
-            "ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ."
-        ),
-
-        "Bengali": (
-            "🚨 বিপদের লক্ষণ / জরুরি সতর্কতা\n\n"
-            "আপনার প্রশ্নে এমন একটি সম্ভাব্য বিপদের লক্ষণ রয়েছে "
-            "যার জন্য জরুরি চিকিৎসা পরীক্ষার প্রয়োজন হতে পারে।",
-            "শুধু এই AI টুলের উপর নির্ভর করবেন না। "
-            "ব্যক্তি গুরুতর অসুস্থ হলে অবিলম্বে "
-            "জরুরি চিকিৎসা সহায়তা নিন।"
-        ),
-
-        "Marathi": (
-            "🚨 धोक्याची चिन्हे / तातडीची सूचना\n\n"
-            "तुमच्या प्रश्नामध्ये तातडीच्या वैद्यकीय तपासणीची "
-            "गरज असू शकणारे धोक्याचे चिन्ह आहे.",
-            "फक्त या AI साधनावर अवलंबून राहू नका. "
-            "व्यक्ती गंभीर आजारी असल्यास त्वरित "
-            "आपत्कालीन वैद्यकीय मदत घ्या."
-        )
-    }
-
-    red_flag_title, red_flag_advice = RED_FLAG_MESSAGES[language]
-
-    st.error(red_flag_title)
-    st.warning(red_flag_advice)
-
-        # -----------------------------
-        # GEMINI RESPONSE
-        # -----------------------------
-        try:
-
-            prompt = f"""
-You are Saathi AI, a health-information assistant designed
-to support frontline health workers such as ASHA and ANM workers in India.
-
-Selected health topic:
-{topic}
-
-Health question:
-{question}
-
-Response language:
-if st.button("Ask Saathi"):
-
-    if question.strip():
-
-        detected_flags = detect_red_flags(question)
-
-        # -----------------------------
-        # RED FLAG ALERT
-        # -----------------------------
-        if detected_flags:
-
-            RED_FLAG_MESSAGES = {
-                "English": (
-                    "🚨 RED FLAG / URGENT WARNING\n\n"
-                    "The question contains a possible warning sign "
-                    "that may require urgent medical evaluation.",
-                    "Please do not rely only on this AI tool. "
-                    "Seek appropriate emergency medical care immediately "
-                    "if the person is seriously unwell."
-                ),
-
-                "Hindi": (
-                    "🚨 गंभीर चेतावनी / तत्काल चिकित्सा सहायता\n\n"
-                    "आपके प्रश्न में एक संभावित चेतावनी संकेत है "
-                    "जिसके लिए तुरंत चिकित्सकीय जांच की आवश्यकता हो सकती है।",
-                    "केवल इस AI टूल पर निर्भर न रहें। "
-                    "यदि व्यक्ति गंभीर रूप से अस्वस्थ है, तो तुरंत "
-                    "उचित आपातकालीन चिकित्सा सहायता लें।"
-                ),
-
-                "Tamil": (
-                    "🚨 ஆபத்து அறிகுறி / அவசர எச்சரிக்கை\n\n"
-                    "உங்கள் கேள்வியில் அவசர மருத்துவ பரிசோதனை "
-                    "தேவைப்படக்கூடிய ஆபத்து அறிகுறி உள்ளது.",
-                    "இந்த AI கருவியை மட்டும் நம்ப வேண்டாம். "
-                    "நபர் மிகவும் உடல்நிலை பாதிக்கப்பட்டிருந்தால், "
-                    "உடனடியாக அவசர மருத்துவ உதவியைப் பெறுங்கள்."
-                ),
-
-                "Telugu": (
-                    "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక\n\n"
-                    "మీ ప్రశ్నలో తక్షణ వైద్య పరీక్ష అవసరమయ్యే "
-                    "ప్రమాద సూచన ఉండవచ్చు.",
-                    "ఈ AI సాధనంపై మాత్రమే ఆధారపడవద్దు. "
-                    "వ్యక్తి తీవ్రంగా అనారోగ్యంగా ఉంటే వెంటనే "
-                    "అత్యవసర వైద్య సహాయం పొందండి."
-                ),
-
-                "Malayalam": (
-                    "🚨 അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്\n\n"
-                    "നിങ്ങളുടെ ചോദ്യത്തിൽ അടിയന്തര മെഡിക്കൽ പരിശോധന "
-                    "ആവശ്യമായേക്കാവുന്ന ഒരു അപകട സൂചനയുണ്ട്.",
-                    "ഈ AI ഉപകരണത്തെ മാത്രം ആശ്രയിക്കരുത്. "
-                    "വ്യക്തിക്ക് ഗുരുതരമായ അസുഖമുണ്ടെങ്കിൽ ഉടൻ "
-                    "അടിയന്തര മെഡിക്കൽ സഹായം തേടുക."
-                ),
-
-                "Kannada": (
-                    "🚨 ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ\n\n"
-                    "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯಲ್ಲಿ ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆಯ "
-                    "ಅಗತ್ಯವಿರುವ ಅಪಾಯದ ಸೂಚನೆ ಇರಬಹುದು.",
-                    "ಈ AI ಸಾಧನವನ್ನು ಮಾತ್ರ ಅವಲಂಬಿಸಬೇಡಿ. "
-                    "ವ್ಯಕ್ತಿಯ ಆರೋಗ್ಯ ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ ತಕ್ಷಣ "
-                    "ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ."
-                ),
-
-                "Bengali": (
-                    "🚨 বিপদের লক্ষণ / জরুরি সতর্কতা\n\n"
-                    "আপনার প্রশ্নে এমন একটি সম্ভাব্য বিপদের লক্ষণ রয়েছে "
-                    "যার জন্য জরুরি চিকিৎসা পরীক্ষার প্রয়োজন হতে পারে।",
-                    "শুধু এই AI টুলের উপর নির্ভর করবেন না। "
-                    "ব্যক্তি গুরুতর অসুস্থ হলে অবিলম্বে "
-                    "জরুরি চিকিৎসা সহায়তা নিন।"
-                ),
-
-                "Marathi": (
-                    "🚨 धोक्याची चिन्हे / तातडीची सूचना\n\n"
-                    "तुमच्या प्रश्नामध्ये तातडीच्या वैद्यकीय तपासणीची "
-                    "गरज असू शकणारे धोक्याचे चिन्ह आहे.",
-                    "फक्त या AI साधनावर अवलंबून राहू नका. "
-                    "व्यक्ती गंभीर आजारी असल्यास त्वरित "
-                    "आपत्कालीन वैद्यकीय मदत घ्या."
-                )
-            }
 
             red_flag_title, red_flag_advice = RED_FLAG_MESSAGES[language]
 
@@ -529,14 +428,16 @@ Selected language:
 Health question:
 {question}
 
-Provide clear, simple and practical health information
-in the selected language.
+IMPORTANT:
+Respond ONLY in the selected language: {language}.
+
+Provide clear, simple and practical health information.
 
 SAFETY RULES:
 - Do not diagnose the patient.
 - Do not prescribe medicines or dosages.
 - Mention important warning signs when relevant.
-- If the symptoms could indicate an emergency, clearly recommend
+- If symptoms could indicate an emergency, clearly recommend
   urgent medical evaluation.
 - Do not tell the user to wait when serious warning signs are present.
 - Use simple language suitable for frontline health workers.
@@ -567,7 +468,3 @@ Structure the answer as:
 
             st.error("❌ Saathi encountered an error.")
             st.error(str(e))
-
-    else:
-
-        st.warning("Please enter a health question first.")
