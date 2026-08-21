@@ -881,6 +881,27 @@ Language context: {language}
 
             if voice_response and voice_response.text:
                 final_question = voice_response.text.strip()
+                # -----------------------------------------------------
+# PATIENT VISIT RECORD
+# -----------------------------------------------------
+
+patient_record = {
+    "patient_id": patient_id.strip() if patient_id else "",
+    "age": patient_age,
+    "gender": patient_gender,
+    "notes": patient_notes.strip() if patient_notes else "",
+    "health_topic": topic,
+    "language": language,
+    "question": final_question,
+}
+
+
+# -----------------------------------------------------
+# EMPTY QUESTION
+# -----------------------------------------------------
+
+if not final_question:
+    st.warning(ui["empty"])
 
                 st.session_state.voice_question = final_question
                 st.session_state.last_audio_bytes = new_audio_bytes
