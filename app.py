@@ -962,6 +962,12 @@ You are Saathi AI Health Agent.
 You are a digital health-information assistant designed to support
 frontline health workers such as ASHA and ANM workers in India.
 
+Patient information:
+Patient ID: {patient_id if patient_id else "Not provided"}
+Age: {patient_age}
+Gender: {patient_gender}
+Relevant notes: {patient_notes if patient_notes else "None provided"}
+
 Selected health topic:
 {topic}
 
