@@ -300,6 +300,36 @@ topic_index = TOPICS[language].index(selected_topic_display)
 topic = TOPIC_KEYS[topic_index]
 
 # =========================================================
+# PATIENT INFORMATION
+# =========================================================
+
+st.subheader("👤 Patient Information")
+
+patient_id = st.text_input(
+    "Patient ID",
+    placeholder="Example: P001"
+)
+
+patient_age = st.number_input(
+    "Age",
+    min_value=0,
+    max_value=120,
+    value=0,
+    step=1
+)
+
+patient_gender = st.selectbox(
+    "Gender",
+    ["Not specified", "Female", "Male", "Other"]
+)
+
+patient_notes = st.text_area(
+    "Relevant Patient Notes",
+    placeholder="Example: History of diabetes, hypertension, pregnancy, etc.",
+    height=100
+)
+
+# =========================================================
 # TEXT QUESTION
 # =========================================================
 
