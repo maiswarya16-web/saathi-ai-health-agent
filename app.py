@@ -756,6 +756,110 @@ RED_FLAG_MESSAGE = {
     ),
 }
 
+# =========================================================
+# BIG EMERGENCY ACTION PANEL
+# =========================================================
+
+def show_emergency_alert(language):
+    """Show a highly visible emergency action message."""
+
+    st.error("🚨 EMERGENCY")
+
+    if language == "Tamil":
+        st.markdown(
+            """
+            # 📞 CALL 112
+            ## 🚑 OR LOCAL AMBULANCE / 108
+
+            # 🏥 GO TO THE NEAREST HOSPITAL
+
+            ## ⚠️ DO NOT WAIT
+            """
+        )
+
+    elif language == "Hindi":
+        st.markdown(
+            """
+            # 📞 112 पर कॉल करें
+            ## 🚑 या स्थानीय एम्बुलेंस / 108
+
+            # 🏥 निकटतम अस्पताल जाएं
+
+            ## ⚠️ इंतज़ार न करें
+            """
+        )
+
+    elif language == "Telugu":
+        st.markdown(
+            """
+            # 📞 112 కు కాల్ చేయండి
+            ## 🚑 లేదా స్థానిక అంబులెన్స్ / 108
+
+            # 🏥 సమీప ఆసుపత్రికి వెళ్లండి
+
+            ## ⚠️ ఆలస్యం చేయవద్దు
+            """
+        )
+
+    elif language == "Malayalam":
+        st.markdown(
+            """
+            # 📞 112 ലേക്ക് വിളിക്കുക
+            ## 🚑 അല്ലെങ്കിൽ പ്രാദേശിക ആംബുലൻസ് / 108
+
+            # 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
+
+            ## ⚠️ കാത്തിരിക്കരുത്
+            """
+        )
+
+    elif language == "Kannada":
+        st.markdown(
+            """
+            # 📞 112 ಗೆ ಕರೆ ಮಾಡಿ
+            ## 🚑 ಅಥವಾ ಸ್ಥಳೀಯ ಆಂಬ್ಯುಲೆನ್ಸ್ / 108
+
+            # 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
+
+            ## ⚠️ ಕಾಯಬೇಡಿ
+            """
+        )
+
+    elif language == "Bengali":
+        st.markdown(
+            """
+            # 📞 112-এ কল করুন
+            ## 🚑 অথবা স্থানীয় অ্যাম্বুলেন্স / 108
+
+            # 🏥 নিকটস্থ হাসপাতালে যান
+
+            ## ⚠️ অপেক্ষা করবেন না
+            """
+        )
+
+    elif language == "Marathi":
+        st.markdown(
+            """
+            # 📞 112 वर कॉल करा
+            ## 🚑 किंवा स्थानिक रुग्णवाहिका / 108
+
+            # 🏥 जवळच्या रुग्णालयात जा
+
+            ## ⚠️ विलंब करू नका
+            """
+        )
+
+    else:
+        st.markdown(
+            """
+            # 📞 CALL 112
+            ## 🚑 OR LOCAL AMBULANCE / 108
+
+            # 🏥 GO TO THE NEAREST HOSPITAL
+
+            ## ⚠️ DO NOT WAIT
+            """
+        )
 
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
