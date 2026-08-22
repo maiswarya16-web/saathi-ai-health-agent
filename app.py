@@ -894,6 +894,20 @@ Language context: {language}
             show_gemini_error(e)
 
     # -----------------------------------------------------
+    # PATIENT VISIT RECORD
+    # -----------------------------------------------------
+
+    patient_record = {
+        "patient_id": patient_id.strip() if patient_id else "",
+        "age": patient_age,
+        "gender": patient_gender,
+        "notes": patient_notes.strip() if patient_notes else "",
+        "health_topic": topic,
+        "language": language,
+        "question": final_question,
+    }
+    
+    # -----------------------------------------------------
     # USE LAST SUCCESSFUL VOICE TRANSCRIPTION
     # -----------------------------------------------------
 
