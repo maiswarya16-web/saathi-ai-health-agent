@@ -1047,7 +1047,7 @@ Language context: {language}
 
         if detected_flags:
 
-            st.error("🔴 EMERGENCY")
+            show_emergency_alert(language)
 
             st.markdown(
                 f"### {RED_FLAG_TITLE[language]}"
