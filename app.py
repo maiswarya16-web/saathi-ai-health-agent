@@ -930,32 +930,65 @@ Language context: {language}
             f"📝 Question received:\n\n{final_question}"
         )
 
+
         # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
         # -------------------------------------------------
 
         detected_flags = detect_red_flags(final_question)
 
+        # -------------------------------------------------
+        # EMERGENCY MODE
+        # -------------------------------------------------
+
         if detected_flags:
-            st.error(
-                f"{RED_FLAG_TITLE[language]}\n\n"
-                f"{RED_FLAG_MESSAGE[language]}"
-            )
+
+            st.error("🔴 EMERGENCY")
 
             st.markdown(
-                "### 🚨 Possible emergency category detected"
+                f"### {RED_FLAG_TITLE[language]}"
             )
+
+            st.warning(
+                f"🚨 {RED_FLAG_MESSAGE[language]}"
+            )
+
+            st.markdown("### 🆘 What to do now")
+
+            if language == "Tamil":
+                st.write(
+                    "• நபரை தனியாக விடாதீர்கள்.\n"
+                    "• உடனடி மருத்துவ உதவியை பெறுங்கள்.\n"
+                    "• இந்தியாவில் 112 அல்லது உள்ளூர் ஆம்புலன்ஸ் சேவையை தொடர்பு கொள்ளுங்கள்.\n"
+                    "• அருகிலுள்ள மருத்துவமனைக்கு செல்லுங்கள்."
+                )
+
+            elif language == "Hindi":
+                st.write(
+                    "• व्यक्ति को अकेला न छोड़ें।\n"
+                    "• तुरंत चिकित्सा सहायता लें।\n"
+                    "• भारत में 112 या स्थानीय एम्बुलेंस सेवा से संपर्क करें।\n"
+                    "• निकटतम अस्पताल जाएं।"
+                )
+
+            else:
+                st.write(
+                    "• Do not leave the person alone.\n"
+                    "• Seek immediate medical help.\n"
+                    "• In India, call 112 or the local ambulance service.\n"
+                    "• Go to the nearest appropriate hospital."
+                )
+
+            st.markdown("### 🚨 Warning signs detected")
 
             for category, matches in detected_flags:
                 st.markdown(
-                    f"**{category}** — matched: {', '.join(matches)}"
+                    f"**{category}** — {', '.join(matches)}"
                 )
 
-            st.warning(
-                "⚠️ If the person is seriously unwell, unconscious, "
-                "having severe breathing difficulty, severe chest pain, "
-                "major bleeding, a seizure, or another emergency sign, "
-                "seek urgent medical care immediately."
+            st.error(
+                "⚠️ Do not wait for Saathi's AI response if the person "
+                "has a serious or life-threatening condition."
             )
 
         # -------------------------------------------------
