@@ -1109,9 +1109,9 @@ Language context: {language}
         )
         if detected_flags:
             st.info("🛑 Emergency detected — normal AI guidance will be skipped.")
-             st.stop()
+        st.stop()
 
-             prompt = f"""
+        prompt = f"""
 You are Saathi AI Health Agent.
 
 You are a fast, practical digital health assistant designed for
