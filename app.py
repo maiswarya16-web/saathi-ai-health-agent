@@ -1078,6 +1078,12 @@ Language context: {language}
 
         detected_flags = detect_red_flags(final_question)
 
+        
+        # -------------------------------------------------
+        # FIRST-AID CHECK
+        # -------------------------------------------------
+        first_aid_type = detect_first_aid(final_question)
+
         # -------------------------------------------------
         # EMERGENCY MODE
         # -------------------------------------------------
