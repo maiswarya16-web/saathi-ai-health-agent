@@ -653,7 +653,7 @@ def show_first_aid_guide(language, first_aid_type):
 
         st.image(
             "first_aid_severe_bleeding.png",
-            use_container_width=True
+            width=350
         )
 
         st.error("🩸 Severe bleeding")
