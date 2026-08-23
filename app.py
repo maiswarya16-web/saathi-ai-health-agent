@@ -607,6 +607,30 @@ FUZZY_RED_FLAGS = [
     "baby not breathing",
 ]
 
+# =========================================================
+# FIRST-AID DETECTION
+# =========================================================
+
+FIRST_AID_GUIDES = {
+    "Severe Bleeding": [
+        "severe bleeding",
+        "heavy bleeding",
+        "uncontrolled bleeding",
+        "bleeding won't stop",
+        "bleeding does not stop",
+        "profuse bleeding",
+        "cut bleeding heavily",
+        "deep cut",
+        "deep wound",
+        "बहुत ज्यादा खून बहना",
+        "तेज रक्तस्राव",
+        "खून नहीं रुक रहा",
+        "கடுமையான இரத்தப்போக்கு",
+        "அதிக இரத்தப்போக்கு",
+        "இரத்தம் நிற்கவில்லை",
+    ],
+}
+
 
 def normalize_text(text):
     """Normalize text for reliable multilingual keyword matching."""
