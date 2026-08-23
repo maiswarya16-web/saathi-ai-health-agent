@@ -1086,29 +1086,23 @@ Language context: {language}
     if not final_question:
         st.warning(ui["empty"])
 
-    else:
+        else:
         st.info(
             f"📝 Question received:\n\n{final_question}"
         )
-
 
         # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
         # -------------------------------------------------
 
         detected_flags = detect_red_flags(final_question)
-
-        
-        # -------------------------------------------------
-        # FIRST-AID CHECK
-        # -------------------------------------------------
         first_aid_type = detect_first_aid(final_question)
 
         # -------------------------------------------------
         # EMERGENCY MODE
         # -------------------------------------------------
 
-                if detected_flags:
+        if detected_flags:
 
             show_emergency_alert(language)
 
