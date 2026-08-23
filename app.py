@@ -643,6 +643,26 @@ def detect_first_aid(text):
                 return guide_name
 
     return None
+# =========================================================
+# FIRST-AID VISUAL GUIDE
+# =========================================================
+
+def show_first_aid_guide(language, first_aid_type):
+
+    if first_aid_type == "Severe Bleeding":
+
+        st.image(
+            "first_aid_severe_bleeding.png",
+            use_container_width=True
+        )
+
+        st.error("🩸 Severe bleeding")
+
+        st.write(
+            "• Apply firm pressure to the wound.\n"
+            "• Do not remove soaked cloth; add another cloth on top.\n"
+            "• Get urgent medical help."
+        )
 
 
 def normalize_text(text):
