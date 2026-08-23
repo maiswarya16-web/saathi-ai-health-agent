@@ -1086,7 +1086,7 @@ Language context: {language}
     if not final_question:
         st.warning(ui["empty"])
 
-        else:
+    else:
         st.info(
             f"📝 Question received:\n\n{final_question}"
         )
