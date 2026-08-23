@@ -630,6 +630,19 @@ FIRST_AID_GUIDES = {
         "இரத்தம் நிற்கவில்லை",
     ],
 }
+def detect_first_aid(text):
+    """Detect whether the question matches a first-aid situation."""
+    if not text:
+        return None
+
+    normalized = normalize_text(text)
+
+    for guide_name, keywords in FIRST_AID_GUIDES.items():
+        for keyword in keywords:
+            if normalize_text(keyword) in normalized:
+                return guide_name
+
+    return None
 
 
 def normalize_text(text):
