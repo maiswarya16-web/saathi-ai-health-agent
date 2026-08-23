@@ -1138,7 +1138,7 @@ Language context: {language}
         # EMERGENCY MODE
         # -------------------------------------------------
 
-        if detected_flags:
+    if detected_flags:
 
             show_emergency_alert(language)
 
