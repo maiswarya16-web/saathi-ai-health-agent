@@ -1137,6 +1137,11 @@ Language context: {language}
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
+            
+        elif first_aid_type:
+            show_first_aid_guide(language, first_aid_type)
+            st.info("🩹 First-aid guidance shown above. Follow it while arranging appropriate medical care if needed.")
+            st.stop()
 
         # -------------------------------------------------
         # GEMINI PROMPT
