@@ -1127,6 +1127,8 @@ Language context: {language}
 
         detected_flags = detect_red_flags(final_question)
         first_aid_type = detect_first_aid(final_question)
+        
+        st.write("DEBUG First Aid:", first_aid_type)
 
         # -------------------------------------------------
         # EMERGENCY MODE
