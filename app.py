@@ -1108,7 +1108,7 @@ Language context: {language}
         # EMERGENCY MODE
         # -------------------------------------------------
 
-        if detected_flags:
+                if detected_flags:
 
             show_emergency_alert(language)
 
@@ -1157,22 +1157,18 @@ Language context: {language}
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
-            if detected_flags:
 
-    # your existing emergency display
-    # 🚨 emergency message
-    # 📞 112 / 108
-    # 🏥 hospital
-    # etc.
+            if first_aid_type:
+                show_first_aid_guide(
+                    language,
+                    first_aid_type
+                )
 
-    if first_aid_type:
-        show_first_aid_guide(language, first_aid_type)
-            
-        elif first_aid_type:
-            show_first_aid_guide(language, first_aid_type)
-            st.info("🩹 First-aid guidance shown above. Follow it while arranging appropriate medical care if needed.")
+            st.info(
+                "🛑 Emergency detected — normal AI guidance will be skipped."
+            )
+
             st.stop()
-
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
