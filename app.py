@@ -629,6 +629,22 @@ FIRST_AID_GUIDES = {
         "அதிக இரத்தப்போக்கு",
         "இரத்தம் நிற்கவில்லை",
     ],
+        "Burn": [
+        "burn",
+        "burned",
+        "burnt",
+        "scald",
+        "hot water burn",
+        "fire burn",
+        "oil burn",
+        "காயம் சுட்டது",
+        "தீக்காயம்",
+        "சூடு காயம்",
+        "சூடான தண்ணீரால் சுட்டது",
+        "जलना",
+        "जल गया",
+        "गर्म पानी से जलना",
+    ],
 }
 def detect_first_aid(text):
     """Detect whether the question matches a first-aid situation."""
