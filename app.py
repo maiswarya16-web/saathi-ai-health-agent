@@ -614,6 +614,9 @@ FUZZY_RED_FLAGS = [
 FIRST_AID_GUIDES = {
     "Severe Bleeding": [
         "severe bleeding",
+        "wound is bleeding heavily",
+        "wound is bleeding",
+        "bleeding heavily",
         "heavy bleeding",
         "uncontrolled bleeding",
         "bleeding won't stop",
