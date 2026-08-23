@@ -663,7 +663,7 @@ def show_first_aid_guide(language, first_aid_type):
             "• Do not remove soaked cloth; add another cloth on top.\n"
             "• Get urgent medical help."
         )
-            elif first_aid_type == "Burn":
+        elif first_aid_type == "Burn":
 
         st.image(
             "first_aid_burn.png",
