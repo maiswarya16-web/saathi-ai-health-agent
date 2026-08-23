@@ -1121,24 +1121,28 @@ Language context: {language}
             f"📝 Question received:\n\n{final_question}"
         )
 
-        # -------------------------------------------------
+              # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
         # -------------------------------------------------
 
         detected_flags = detect_red_flags(final_question)
         first_aid_type = detect_first_aid(final_question)
-        
-    if first_aid_type:
-       show_first_aid_guide(
-           language,
-           first_aid_type
-    )
+
+        # -------------------------------------------------
+        # FIRST-AID GUIDE
+        # -------------------------------------------------
+
+        if first_aid_type:
+            show_first_aid_guide(
+                language,
+                first_aid_type
+            )
 
         # -------------------------------------------------
         # EMERGENCY MODE
         # -------------------------------------------------
 
-    if detected_flags:
+        if detected_flags:
 
             show_emergency_alert(language)
 
@@ -1193,6 +1197,10 @@ Language context: {language}
             )
 
             st.stop()
+
+        # -------------------------------------------------
+        # GEMINI PROMPT
+        # -------------------------------------------------
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
