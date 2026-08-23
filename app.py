@@ -1157,6 +1157,16 @@ Language context: {language}
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
+            if detected_flags:
+
+    # your existing emergency display
+    # 🚨 emergency message
+    # 📞 112 / 108
+    # 🏥 hospital
+    # etc.
+
+    if first_aid_type:
+        show_first_aid_guide(language, first_aid_type)
             
         elif first_aid_type:
             show_first_aid_guide(language, first_aid_type)
