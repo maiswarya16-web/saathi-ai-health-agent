@@ -1128,7 +1128,11 @@ Language context: {language}
         detected_flags = detect_red_flags(final_question)
         first_aid_type = detect_first_aid(final_question)
         
-        st.write("DEBUG First Aid:", first_aid_type)
+    if first_aid_type:
+       show_first_aid_guide(
+           language,
+           first_aid_type
+    )
 
         # -------------------------------------------------
         # EMERGENCY MODE
@@ -1183,12 +1187,6 @@ Language context: {language}
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
-
-            if first_aid_type:
-                show_first_aid_guide(
-                    language,
-                    first_aid_type
-                )
 
             st.info(
                 "🛑 Emergency detected — normal AI guidance will be skipped."
