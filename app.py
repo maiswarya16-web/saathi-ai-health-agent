@@ -1180,7 +1180,7 @@ Language context: {language}
                     "• Go to the nearest appropriate hospital."
                 )
 
-            st.markdown("### 🚨 Warning signs detected")
+        st.markdown("### 🚨 Warning signs detected")
 
             for category, matches in detected_flags:
                 st.markdown(
