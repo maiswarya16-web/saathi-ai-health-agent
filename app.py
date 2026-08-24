@@ -3,7 +3,7 @@ import difflib
 import streamlit as st
 from google import genai
 
-# =========================================================
+# =========================================================f
 # PAGE CONFIGURATION
 # =========================================================
 
@@ -895,25 +895,49 @@ def show_emergency_alert(language):
         st.write("112 — Emergency")
         st.write("108 — Ambulance")
 
-    # Emergency action buttons
-    col1, col2 = st.columns(2)
+# =========================================================
+# EMERGENCY CALL BUTTONS
+# =========================================================
 
-    with col1:
-        st.link_button(
-            "📞 Call 112",
-            "tel:112",
-            use_container_width=True,
-        )
+st.markdown(
+    """
+    <div style="display:flex; gap:10px; margin-top:15px;">
 
-    with col2:
-        st.link_button(
-            "🚑 Call 108",
-            "tel:108",
-            use_container_width=True,
-        )
+        <a href="tel:112"
+           style="
+           flex:1;
+           text-align:center;
+           padding:14px;
+           background:#d32f2f;
+           color:white;
+           text-decoration:none;
+           border-radius:10px;
+           font-weight:bold;
+           font-size:18px;">
+           📞 Call 112
+        </a>
 
-    st.warning("🏥 Go to the nearest appropriate hospital")
-    st.error("⚠️ DO NOT WAIT")
+        <a href="tel:108"
+           style="
+           flex:1;
+           text-align:center;
+           padding:14px;
+           background:#1976d2;
+           color:white;
+           text-decoration:none;
+           border-radius:10px;
+           font-weight:bold;
+           font-size:18px;">
+           🚑 Call 108
+        </a>
+
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.warning("🏥 Go to the nearest appropriate hospital")
+st.error("⚠️ DO NOT WAIT")
 
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
