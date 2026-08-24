@@ -950,6 +950,15 @@ def show_emergency_alert(language):
             ## ⚠️ DO NOT WAIT
             """
         )
+    st.markdown("### 📞 Emergency Calls")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.link_button("📞 Call 112", "tel:112")
+
+    with col2:
+        st.link_button("🚑 Call 108", "tel:108")
 
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
