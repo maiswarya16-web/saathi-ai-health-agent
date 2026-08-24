@@ -1154,7 +1154,7 @@ Language context: {language}
                 f"🚨 {RED_FLAG_MESSAGE[language]}"
             )
 
-            st.markdown("### 🆘 What to do now")
+        st.markdown("### 🆘 What to do now")
 
             if language == "Tamil":
                 st.write(
