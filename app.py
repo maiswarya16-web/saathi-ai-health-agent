@@ -912,38 +912,6 @@ def show_emergency_alert(language):
             margin-bottom:20px;
         ">
 
-            <a href="tel:112"
-               style="
-               flex:1;
-               text-align:center;
-               padding:15px 10px;
-               background-color:#d32f2f;
-               color:white;
-               text-decoration:none;
-               border-radius:10px;
-               font-weight:bold;
-               font-size:18px;
-               display:block;
-               ">
-               📞 Call 112
-            </a>
-
-            <a href="tel:108"
-               style="
-               flex:1;
-               text-align:center;
-               padding:15px 10px;
-               background-color:#1976d2;
-               color:white;
-               text-decoration:none;
-               border-radius:10px;
-               font-weight:bold;
-               font-size:18px;
-               display:block;
-               ">
-               🚑 Call 108
-            </a>
-
         </div>
         """,
         unsafe_allow_html=True
