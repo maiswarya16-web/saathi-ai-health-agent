@@ -1164,7 +1164,7 @@ Language context: {language}
                     "• அருகிலுள்ள மருத்துவமனைக்கு செல்லுங்கள்."
                 )
 
-            elif language == "Hindi":
+        elif language == "Hindi":
                 st.write(
                     "• व्यक्ति को अकेला न छोड़ें।\n"
                     "• तुरंत चिकित्सा सहायता लें।\n"
@@ -1172,7 +1172,7 @@ Language context: {language}
                     "• निकटतम अस्पताल जाएं।"
                 )
 
-            else:
+        else:
                 st.write(
                     "• Do not leave the person alone.\n"
                     "• Seek immediate medical help.\n"
