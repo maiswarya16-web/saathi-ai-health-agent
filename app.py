@@ -2062,16 +2062,259 @@ def detect_red_flags(text):
 # =========================================================
 
 def get_risk_priority(detected_flags, question):
-
     """
     Determine local risk priority before Gemini.
-    Emergency flags always have the highest priority.
+
+    Emergency red flags always have the highest priority.
+    Burns are treated intelligently:
+    - ordinary/minor burns -> LOW/MODERATE
+    - severe/major/deep/large burns -> EMERGENCY
     """
 
     if detected_flags:
         return "EMERGENCY"
 
     text = normalize_text(question)
+
+    # -------------------------------------------------
+    # BURN EMERGENCY DETECTION
+    # -------------------------------------------------
+
+    burn_words = [
+        "burn",
+        "burned",
+        "burnt",
+        "scald",
+        "जलना",
+        "जल गया",
+        "जलने",
+        "जलने की चोट",
+        "தீக்காயம்",
+        "சுட்டது",
+        "காயம் சுட்டது",
+        "కాలిన గాయం",
+        "పొలికిన గాయం",
+        "పొള്ളൽ",
+        "ചൂടേറ്റ പൊള്ളൽ",
+        "ಸುಟ್ಟ ಗಾಯ",
+        "ಬಿಸಿ ನೀರಿನಿಂದ ಸುಟ್ಟ ಗಾಯ",
+        "পোড়া",
+        "গরম পানিতে পোড়া",
+        "भाजणे",
+        "भाजले",
+    ]
+
+    severe_burn_words = [
+        "severe burn",
+        "major burn",
+        "deep burn",
+        "large burn",
+        "extensive burn",
+        "serious burn",
+        "very bad burn",
+        "badly burned",
+        "burn is deep",
+        "deeply burned",
+
+        "गंभीर जलना",
+        "गंभीर जलने की चोट",
+        "बहुत गंभीर जलना",
+        "बड़ा जलना",
+
+        "கடுமையான தீக்காயம்",
+        "ஆழமான தீக்காயம்",
+        "பெரிய தீக்காயம்",
+
+        "తీవ్రమైన కాలిన గాయం",
+        "లోతైన కాలిన గాయం",
+        "పెద్ద కాలిన గాయం",
+
+        "ഗുരുതരമായ പൊള്ളൽ",
+        "ആഴത്തിലുള്ള പൊള്ളൽ",
+        "വലിയ പൊള്ളൽ",
+
+        "ತೀವ್ರ ಸುಟ್ಟ ಗಾಯ",
+        "ಆಳವಾದ ಸುಟ್ಟ ಗಾಯ",
+        "ದೊಡ್ಡ ಸುಟ್ಟ ಗಾಯ",
+
+        "গুরুতর পোড়া",
+        "গভীর পোড়া",
+        "বড় পোড়া",
+
+        "गंभीर भाजणे",
+        "खोल भाजणे",
+        "मोठे भाजणे",
+    ]
+
+    # -------------------------------------------------
+    # BURN WITH AIRWAY / BREATHING PROBLEM
+    # -------------------------------------------------
+
+    burn_airway_words = [
+        "burn and difficulty breathing",
+        "burn with difficulty breathing",
+        "burn and cannot breathe",
+        "burn with breathing difficulty",
+        "smoke inhalation",
+        "inhaled smoke",
+        "face burn and breathing",
+        "burned face and cannot breathe",
+
+        "चेहरा जला और सांस लेने में दिक्कत",
+        "जलने के बाद सांस लेने में दिक्कत",
+
+        "தீக்காயம் மற்றும் மூச்சு விடுவதில் சிரமம்",
+        "தீக்காயத்திற்குப் பிறகு மூச்சு விட முடியவில்லை",
+
+        "కాలిన గాయంతో శ్వాస తీసుకోవడంలో ఇబ్బంది",
+        "కాలిన తర్వాత శ్వాస తీసుకోలేకపోతున్నాను",
+
+        "പൊള്ളലിനൊപ്പം ശ്വസിക്കാൻ ബുദ്ധിമുട്ട്",
+        "പൊള്ളലിന് ശേഷം ശ്വാസം എടുക്കാൻ കഴിയുന്നില്ല",
+
+        "ಸುಟ್ಟ ಗಾಯದೊಂದಿಗೆ ಉಸಿರಾಟದ ತೊಂದರೆ",
+        "ಸುಟ್ಟ ನಂತರ ಉಸಿರಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ",
+
+        "পোড়ার সঙ্গে শ্বাস নিতে অসুবিধা",
+        "পোড়ার পরে শ্বাস নিতে পারছি না",
+
+        "भाजल्यावर श्वास घेण्यास त्रास",
+        "भाजल्यानंतर श्वास घेता येत नाही",
+    ]
+
+    # -------------------------------------------------
+    # ELECTRICAL BURN / ELECTRIC SHOCK
+    # -------------------------------------------------
+
+    electrical_words = [
+        "electric shock",
+        "electrical burn",
+        "electrical injury",
+        "electric burn",
+
+        "बिजली का झटका",
+        "बिजली से जलना",
+
+        "மின்சார அதிர்ச்சி",
+        "மின்சார தீக்காயம்",
+
+        "విద్యుత్ షాక్",
+        "విద్యుత్ కాలిన గాయం",
+
+        "വൈദ്യുതാഘാതം",
+        "വൈദ്യുത പൊള്ളൽ",
+
+        "ವಿದ್ಯುತ್ ಆಘಾತ",
+        "ವಿದ್ಯುತ್ ಸುಟ್ಟ ಗಾಯ",
+
+        "বৈদ্যুতিক শক",
+        "বৈদ্যুতিক পোড়া",
+
+        "वीज लागणे",
+        "वीजेमुळे भाजणे",
+    ]
+
+    # -------------------------------------------------
+    # CHECK BURN EMERGENCIES
+    # -------------------------------------------------
+
+    if any(pattern in text for pattern in severe_burn_words):
+        return "EMERGENCY"
+
+    if any(pattern in text for pattern in burn_airway_words):
+        return "EMERGENCY"
+
+    if any(pattern in text for pattern in electrical_words):
+        return "EMERGENCY"
+
+    # -------------------------------------------------
+    # CLEAR HIGH-RISK PATTERNS
+    # -------------------------------------------------
+
+    high_risk_patterns = [
+        "pregnancy",
+        "pregnant",
+        "newborn",
+        "baby",
+        "infant",
+        "severe pain",
+        "persistent vomiting",
+        "very high fever",
+        "blood pressure very high",
+        "very high bp",
+        "blood sugar very high",
+        "blood sugar very low",
+        "difficulty eating",
+        "difficulty drinking",
+        "dehydration",
+        "repeated vomiting",
+        "severe weakness",
+    ]
+
+    # -------------------------------------------------
+    # MODERATE-RISK PATTERNS
+    # -------------------------------------------------
+
+    moderate_risk_patterns = [
+        "fever",
+        "cough",
+        "vomiting",
+        "diarrhea",
+        "dizziness",
+        "abdominal pain",
+        "stomach pain",
+        "back pain",
+        "rash",
+        "swelling",
+        "persistent pain",
+        "weakness",
+    ]
+
+    # -------------------------------------------------
+    # COMMON MILD SYMPTOMS
+    # -------------------------------------------------
+
+    low_risk_patterns = [
+        "mild headache",
+        "slight headache",
+        "minor headache",
+        "small headache",
+        "mild pain",
+        "slight pain",
+        "small burn",
+        "minor burn",
+        "mild burn",
+    ]
+
+    # -------------------------------------------------
+    # LOW RISK
+    # -------------------------------------------------
+
+    if any(pattern in text for pattern in low_risk_patterns):
+        return "LOW"
+
+    # -------------------------------------------------
+    # HIGH RISK
+    # -------------------------------------------------
+
+    if any(pattern in text for pattern in high_risk_patterns):
+        return "HIGH"
+
+    # -------------------------------------------------
+    # MODERATE RISK
+    # -------------------------------------------------
+
+    if any(pattern in text for pattern in moderate_risk_patterns):
+        return "MODERATE"
+
+    # -------------------------------------------------
+    # ORDINARY BURN
+    # -------------------------------------------------
+
+    if any(pattern in text for pattern in burn_words):
+        return "LOW"
+
+    return "LOW"
 
     # -----------------------------------------------------
     # HIGH-RISK PATTERNS
