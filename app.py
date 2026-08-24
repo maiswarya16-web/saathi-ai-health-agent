@@ -900,26 +900,20 @@ def show_emergency_alert(language):
         st.markdown("### ⚠️ DO NOT WAIT")
 
     # -----------------------------------------------------
-    # CALL BUTTONS
+    # EMERGENCY BUTTON TEST
     # -----------------------------------------------------
 
-    st.markdown("### 📞 Emergency Call")
+    st.markdown("### 🚨 Emergency Contacts")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.link_button(
-            "📞 Call 112",
-            "tel:112",
-            use_container_width=True
-        )
+        if st.button("📞 Call 112", key="emergency_112", use_container_width=True):
+            st.info("📞 Please call 112 from your phone.")
 
     with col2:
-        st.link_button(
-            "🚑 Call 108",
-            "tel:108",
-            use_container_width=True
-        )
+        if st.button("🚑 Call 108", key="emergency_108", use_container_width=True):
+            st.info("🚑 Please call 108 from your phone.")
 
 # =========================================================
 # ASK SAATHI
