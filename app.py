@@ -1313,6 +1313,15 @@ Language context: {language}
             final_question
         )
 
+        if risk_priority == "LOW":
+            risk_instruction = "LOW RISK — do not upgrade this unless there is a clear warning sign."
+        elif risk_priority == "MODERATE":
+            risk_instruction = "MODERATE RISK."
+        elif risk_priority == "HIGH":
+            risk_instruction = "HIGH RISK."
+        else:
+            risk_instruction = "EMERGENCY — immediate medical attention may be needed."
+
         # -------------------------------------------------
         # FIRST-AID GUIDE
         # -------------------------------------------------
