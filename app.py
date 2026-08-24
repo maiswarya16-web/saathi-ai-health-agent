@@ -851,114 +851,69 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show a highly visible emergency action message."""
+    """Show a highly visible emergency action panel."""
 
     st.error("🚨 EMERGENCY")
 
     if language == "Tamil":
-        st.markdown(
-            """
-            # 📞 CALL 112
-            ## 🚑 OR LOCAL AMBULANCE / 108
-
-            # 🏥 GO TO THE NEAREST HOSPITAL
-
-            ## ⚠️ DO NOT WAIT
-            """
-        )
+        st.markdown("## 📞 உடனடி உதவி")
+        st.write("112 — அவசர உதவி")
+        st.write("108 — ஆம்புலன்ஸ்")
 
     elif language == "Hindi":
-        st.markdown(
-            """
-            # 📞 112 पर कॉल करें
-            ## 🚑 या स्थानीय एम्बुलेंस / 108
-
-            # 🏥 निकटतम अस्पताल जाएं
-
-            ## ⚠️ इंतज़ार न करें
-            """
-        )
+        st.markdown("## 📞 तुरंत सहायता")
+        st.write("112 — आपातकालीन सहायता")
+        st.write("108 — एम्बुलेंस")
 
     elif language == "Telugu":
-        st.markdown(
-            """
-            # 📞 112 కు కాల్ చేయండి
-            ## 🚑 లేదా స్థానిక అంబులెన్స్ / 108
-
-            # 🏥 సమీప ఆసుపత్రికి వెళ్లండి
-
-            ## ⚠️ ఆలస్యం చేయవద్దు
-            """
-        )
+        st.markdown("## 📞 తక్షణ సహాయం")
+        st.write("112 — అత్యవసర సహాయం")
+        st.write("108 — అంబులెన్స్")
 
     elif language == "Malayalam":
-        st.markdown(
-            """
-            # 📞 112 ലേക്ക് വിളിക്കുക
-            ## 🚑 അല്ലെങ്കിൽ പ്രാദേശിക ആംബുലൻസ് / 108
-
-            # 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
-
-            ## ⚠️ കാത്തിരിക്കരുത്
-            """
-        )
+        st.markdown("## 📞 അടിയന്തര സഹായം")
+        st.write("112 — അടിയന്തര സഹായം")
+        st.write("108 — ആംബുലൻസ്")
 
     elif language == "Kannada":
-        st.markdown(
-            """
-            # 📞 112 ಗೆ ಕರೆ ಮಾಡಿ
-            ## 🚑 ಅಥವಾ ಸ್ಥಳೀಯ ಆಂಬ್ಯುಲೆನ್ಸ್ / 108
-
-            # 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
-
-            ## ⚠️ ಕಾಯಬೇಡಿ
-            """
-        )
+        st.markdown("## 📞 ತುರ್ತು ಸಹಾಯ")
+        st.write("112 — ತುರ್ತು ಸಹಾಯ")
+        st.write("108 — ಆಂಬ್ಯುಲೆನ್ಸ್")
 
     elif language == "Bengali":
-        st.markdown(
-            """
-            # 📞 112-এ কল করুন
-            ## 🚑 অথবা স্থানীয় অ্যাম্বুলেন্স / 108
-
-            # 🏥 নিকটস্থ হাসপাতালে যান
-
-            ## ⚠️ অপেক্ষা করবেন না
-            """
-        )
+        st.markdown("## 📞 জরুরি সহায়তা")
+        st.write("112 — জরুরি সহায়তা")
+        st.write("108 — অ্যাম্বুলেন্স")
 
     elif language == "Marathi":
-        st.markdown(
-            """
-            # 📞 112 वर कॉल करा
-            ## 🚑 किंवा स्थानिक रुग्णवाहिका / 108
-
-            # 🏥 जवळच्या रुग्णालयात जा
-
-            ## ⚠️ विलंब करू नका
-            """
-        )
+        st.markdown("## 📞 तातडीची मदत")
+        st.write("112 — आपत्कालीन मदत")
+        st.write("108 — रुग्णवाहिका")
 
     else:
-        st.markdown(
-            """
-            # 📞 CALL 112
-            ## 🚑 OR LOCAL AMBULANCE / 108
+        st.markdown("## 📞 Immediate Help")
+        st.write("112 — Emergency")
+        st.write("108 — Ambulance")
 
-            # 🏥 GO TO THE NEAREST HOSPITAL
-
-            ## ⚠️ DO NOT WAIT
-            """
-        )
-    st.markdown("### 📞 Emergency Calls")
-
+    # Emergency action buttons
     col1, col2 = st.columns(2)
 
     with col1:
-        st.link_button("📞 Call 112", "tel:112")
+        st.link_button(
+            "📞 Call 112",
+            "tel:112",
+            use_container_width=True,
+        )
 
     with col2:
-        st.link_button("🚑 Call 108", "tel:108")
+        st.link_button(
+            "🚑 Call 108",
+            "tel:108",
+            use_container_width=True,
+        )
+
+    st.warning("🏥 Go to the nearest appropriate hospital")
+    st.error("⚠️ DO NOT WAIT")
 
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
