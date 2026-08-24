@@ -855,102 +855,185 @@ def show_emergency_alert(language):
 
     st.error("🚨 EMERGENCY")
 
+    # -----------------------------------------------------
+    # EMERGENCY MESSAGE
+    # -----------------------------------------------------
+
     if language == "Tamil":
-        st.markdown("## 📞 உடனடி உதவி")
-        st.write("112 — அவசர உதவி")
-        st.write("108 — ஆம்புலன்ஸ்")
+        st.markdown(
+            """
+            ## 🚨 அவசர நிலை
+
+            ### 📞 112 — அவசர உதவி
+            ### 🚑 108 — ஆம்புலன்ஸ்
+
+            ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
+
+            ### ⚠️ காத்திருக்க வேண்டாம்
+            """
+        )
 
     elif language == "Hindi":
-        st.markdown("## 📞 तुरंत सहायता")
-        st.write("112 — आपातकालीन सहायता")
-        st.write("108 — एम्बुलेंस")
+        st.markdown(
+            """
+            ## 🚨 आपातकाल
+
+            ### 📞 112 — आपातकालीन सहायता
+            ### 🚑 108 — एम्बुलेंस
+
+            ### 🏥 निकटतम अस्पताल जाएं
+
+            ### ⚠️ इंतज़ार न करें
+            """
+        )
 
     elif language == "Telugu":
-        st.markdown("## 📞 తక్షణ సహాయం")
-        st.write("112 — అత్యవసర సహాయం")
-        st.write("108 — అంబులెన్స్")
+        st.markdown(
+            """
+            ## 🚨 అత్యవసర పరిస్థితి
+
+            ### 📞 112 — అత్యవసర సహాయం
+            ### 🚑 108 — అంబులెన్స్
+
+            ### 🏥 సమీప ఆసుపత్రికి వెళ్లండి
+
+            ### ⚠️ ఆలస్యం చేయవద్దు
+            """
+        )
 
     elif language == "Malayalam":
-        st.markdown("## 📞 അടിയന്തര സഹായം")
-        st.write("112 — അടിയന്തര സഹായം")
-        st.write("108 — ആംബുലൻസ്")
+        st.markdown(
+            """
+            ## 🚨 അടിയന്തര സാഹചര്യം
+
+            ### 📞 112 — അടിയന്തര സഹായം
+            ### 🚑 108 — ആംബുലൻസ്
+
+            ### 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
+
+            ### ⚠️ കാത്തിരിക്കരുത്
+            """
+        )
 
     elif language == "Kannada":
-        st.markdown("## 📞 ತುರ್ತು ಸಹಾಯ")
-        st.write("112 — ತುರ್ತು ಸಹಾಯ")
-        st.write("108 — ಆಂಬ್ಯುಲೆನ್ಸ್")
+        st.markdown(
+            """
+            ## 🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ
+
+            ### 📞 112 — ತುರ್ತು ಸಹಾಯ
+            ### 🚑 108 — ಆಂಬ್ಯುಲೆನ್ಸ್
+
+            ### 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
+
+            ### ⚠️ ಕಾಯಬೇಡಿ
+            """
+        )
 
     elif language == "Bengali":
-        st.markdown("## 📞 জরুরি সহায়তা")
-        st.write("112 — জরুরি সহায়তা")
-        st.write("108 — অ্যাম্বুলেন্স")
+        st.markdown(
+            """
+            ## 🚨 জরুরি পরিস্থিতি
+
+            ### 📞 112 — জরুরি সহায়তা
+            ### 🚑 108 — অ্যাম্বুলেন্স
+
+            ### 🏥 নিকটস্থ হাসপাতালে যান
+
+            ### ⚠️ অপেক্ষা করবেন না
+            """
+        )
 
     elif language == "Marathi":
-        st.markdown("## 📞 तातडीची मदत")
-        st.write("112 — आपत्कालीन मदत")
-        st.write("108 — रुग्णवाहिका")
+        st.markdown(
+            """
+            ## 🚨 आपत्कालीन परिस्थिती
+
+            ### 📞 112 — आपत्कालीन मदत
+            ### 🚑 108 — रुग्णवाहिका
+
+            ### 🏥 जवळच्या रुग्णालयात जा
+
+            ### ⚠️ विलंब करू नका
+            """
+        )
 
     else:
-        st.markdown("## 📞 Immediate Help")
-        st.write("112 — Emergency")
-        st.write("108 — Ambulance")
+        st.markdown(
+            """
+            ## 🚨 EMERGENCY
 
-    else:
-         st.markdown(
-        """
-        # 📞 CALL 112
-        ## 🚑 OR LOCAL AMBULANCE / 108
+            ### 📞 112 — Emergency
+            ### 🚑 108 — Ambulance
 
-        # 🏥 GO TO THE NEAREST HOSPITAL
+            ### 🏥 Go to the nearest hospital
 
-        ## ⚠️ DO NOT WAIT
-        """
+            ### ⚠️ DO NOT WAIT
+            """
+        )
+
+    # -----------------------------------------------------
+    # CALL BUTTONS
+    # -----------------------------------------------------
+
+    st.markdown("### 📞 Emergency Calls")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(
+            """
+            <a href="tel:112" target="_self">
+                <button style="
+                    width:100%;
+                    padding:14px;
+                    background:#d32f2f;
+                    color:white;
+                    border:none;
+                    border-radius:10px;
+                    font-size:18px;
+                    font-weight:bold;
+                    cursor:pointer;
+                ">
+                    📞 Call 112
+                </button>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        st.markdown(
+            """
+            <a href="tel:108" target="_self">
+                <button style="
+                    width:100%;
+                    padding:14px;
+                    background:#1976d2;
+                    color:white;
+                    border:none;
+                    border-radius:10px;
+                    font-size:18px;
+                    font-weight:bold;
+                    cursor:pointer;
+                ">
+                    🚑 Call 108
+                </button>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    # -----------------------------------------------------
+    # FINAL WARNING
+    # -----------------------------------------------------
+
+    st.warning(
+        "🏥 Go to the nearest appropriate hospital immediately."
     )
 
-# =========================================================
-# EMERGENCY CALL BUTTONS
-# =========================================================
-
-st.markdown(
-    """
-    <div style="display:flex; gap:10px; margin-top:15px;">
-
-        <a href="tel:112"
-           style="
-           flex:1;
-           text-align:center;
-           padding:14px;
-           background:#d32f2f;
-           color:white;
-           text-decoration:none;
-           border-radius:10px;
-           font-weight:bold;
-           font-size:18px;">
-           📞 Call 112
-        </a>
-
-        <a href="tel:108"
-           style="
-           flex:1;
-           text-align:center;
-           padding:14px;
-           background:#1976d2;
-           color:white;
-           text-decoration:none;
-           border-radius:10px;
-           font-weight:bold;
-           font-size:18px;">
-           🚑 Call 108
-        </a>
-
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.warning("🏥 Go to the nearest appropriate hospital")
-st.error("⚠️ DO NOT WAIT")
-
+    st.error(
+        "⚠️ Do not wait for Saathi's AI response."
+    )
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
 # =========================================================
