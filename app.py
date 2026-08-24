@@ -735,6 +735,70 @@ def detect_red_flags(text):
 
     normalized = normalize_text(text)
     detected = []
+        # -----------------------------------------------------
+    # SMART SEVERE BLEEDING DETECTION
+    # -----------------------------------------------------
+
+    bleeding_words = [
+        "bleeding",
+        "blood",
+        "bleed",
+        "रक्तस्राव",
+        "खून",
+        "இரத்தம்",
+        "ரத்தம்",
+        "రక్తం",
+        "രക്തം",
+        "ರಕ್ತ",
+        "রক্ত",
+    ]
+
+    severe_bleeding_words = [
+        "heavy",
+        "heavily",
+        "severe",
+        "severely",
+        "a lot",
+        "lot of blood",
+        "won't stop",
+        "does not stop",
+        "not stopping",
+        "continuous",
+        "uncontrolled",
+        "profuse",
+        "बहुत ज्यादा",
+        "तेज",
+        "नहीं रुक",
+        "நிற்கவில்லை",
+        "நிறுத்த முடியவில்லை",
+        "அதிக",
+        "ఆగడం లేదు",
+        "ఎక్కువ",
+        "നിൽക്കുന്നില്ല",
+        "അമിതമായ",
+        "ನಿಲ್ಲುತ್ತಿಲ್ಲ",
+        "ಹೆಚ್ಚಿನ",
+        "বন্ধ হচ্ছে না",
+        "অতিরিক্ত",
+    ]
+
+    has_bleeding = any(
+        word in normalized
+        for word in bleeding_words
+    )
+
+    has_severe_bleeding = any(
+        word in normalized
+        for word in severe_bleeding_words
+    )
+
+    if has_bleeding and has_severe_bleeding:
+        detected.append(
+            (
+                "Severe bleeding / internal bleeding",
+                ["possible severe/heavy bleeding"]
+            )
+        )
 
     for category, keywords in RED_FLAG_GROUPS.items():
         exact_matches = []
