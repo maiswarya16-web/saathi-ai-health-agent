@@ -1365,7 +1365,7 @@ else:
         # FIRST-AID GUIDE
         # -------------------------------------------------
 
-        if first_aid_type:
+if first_aid_type:
             show_first_aid_guide(
                 language,
                 first_aid_type,
@@ -1375,7 +1375,7 @@ else:
         # EMERGENCY MODE
         # -------------------------------------------------
 
-        if detected_flags:
+if detected_flags:
             show_emergency_alert(language)
 
             st.markdown(
@@ -1388,7 +1388,7 @@ else:
 
             st.markdown("### 🆘 What to do now")
 
-            if language == "Tamil":
+if language == "Tamil":
                 st.write(
                     "• நபரை தனியாக விடாதீர்கள்.\n"
                     "• உடனடி மருத்துவ உதவியை பெறுங்கள்.\n"
@@ -1396,7 +1396,7 @@ else:
                     "• அருகிலுள்ள மருத்துவமனைக்கு செல்லுங்கள்."
                 )
 
-            elif language == "Hindi":
+elif language == "Hindi":
                 st.write(
                     "• व्यक्ति को अकेला न छोड़ें।\n"
                     "• तुरंत चिकित्सा सहायता लें।\n"
