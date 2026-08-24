@@ -851,7 +851,7 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show emergency information and call buttons only when an emergency is detected."""
+    """Show emergency information with clickable call buttons."""
 
     st.error("🚨 EMERGENCY")
 
@@ -860,116 +860,94 @@ def show_emergency_alert(language):
     # -----------------------------------------------------
 
     if language == "Tamil":
-        st.markdown(
-            """
-            ## 🚨 அவசர நிலை
-
-            ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
-            ### ⚠️ காத்திருக்க வேண்டாம்
-            """
-        )
+        st.markdown("## 🚨 அவசர நிலை")
+        st.markdown("### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்")
+        st.markdown("### ⚠️ காத்திருக்க வேண்டாம்")
 
     elif language == "Hindi":
-        st.markdown(
-            """
-            ## 🚨 आपातकाल
-
-            ### 🏥 निकटतम अस्पताल जाएं
-            ### ⚠️ इंतज़ार न करें
-            """
-        )
+        st.markdown("## 🚨 आपातकाल")
+        st.markdown("### 🏥 निकटतम अस्पताल जाएं")
+        st.markdown("### ⚠️ इंतज़ार न करें")
 
     elif language == "Telugu":
-        st.markdown(
-            """
-            ## 🚨 అత్యవసర పరిస్థితి
-
-            ### 🏥 సమీప ఆసుపత్రికి వెళ్లండి
-            ### ⚠️ ఆలస్యం చేయవద్దు
-            """
-        )
+        st.markdown("## 🚨 అత్యవసర పరిస్థితి")
+        st.markdown("### 🏥 సమీప ఆసుపత్రికి వెళ్లండి")
+        st.markdown("### ⚠️ ఆలస్యం చేయవద్దు")
 
     elif language == "Malayalam":
-        st.markdown(
-            """
-            ## 🚨 അടിയന്തര സാഹചര്യം
-
-            ### 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
-            ### ⚠️ കാത്തിരിക്കരുത്
-            """
-        )
+        st.markdown("## 🚨 അടിയന്തര സാഹചര്യം")
+        st.markdown("### 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക")
+        st.markdown("### ⚠️ കാത്തിരിക്കരുത്")
 
     elif language == "Kannada":
-        st.markdown(
-            """
-            ## 🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ
-
-            ### 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
-            ### ⚠️ ಕಾಯಬೇಡಿ
-            """
-        )
+        st.markdown("## 🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ")
+        st.markdown("### 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ")
+        st.markdown("### ⚠️ ಕಾಯಬೇಡಿ")
 
     elif language == "Bengali":
-        st.markdown(
-            """
-            ## 🚨 জরুরি পরিস্থিতি
-
-            ### 🏥 নিকটস্থ হাসপাতালে যান
-            ### ⚠️ অপেক্ষা করবেন না
-            """
-        )
+        st.markdown("## 🚨 জরুরি পরিস্থিতি")
+        st.markdown("### 🏥 নিকটস্থ হাসপাতালে যান")
+        st.markdown("### ⚠️ অপেক্ষা করবেন না")
 
     elif language == "Marathi":
-        st.markdown(
-            """
-            ## 🚨 आपत्कालीन परिस्थिती
-
-            ### 🏥 जवळच्या रुग्णालयात जा
-            ### ⚠️ विलंब करू नका
-            """
-        )
+        st.markdown("## 🚨 आपत्कालीन परिस्थिती")
+        st.markdown("### 🏥 जवळच्या रुग्णालयात जा")
+        st.markdown("### ⚠️ विलंब करू नका")
 
     else:
-        st.markdown(
-            """
-            ## 🚨 EMERGENCY
-
-            ### 🏥 GO TO THE NEAREST HOSPITAL
-            ### ⚠️ DO NOT WAIT
-            """
-        )
+        st.markdown("## 🚨 EMERGENCY")
+        st.markdown("### 🏥 Go to the nearest hospital")
+        st.markdown("### ⚠️ DO NOT WAIT")
 
     # -----------------------------------------------------
     # CALL BUTTONS
-    # These buttons are rendered ONLY when this function is called.
-    # This function is called only inside: if detected_flags:
     # -----------------------------------------------------
 
     st.markdown(
         """
-        <div style="display:flex; gap:10px; margin:15px 0;">
+        <div style="
+            display:flex;
+            gap:10px;
+            margin-top:20px;
+            margin-bottom:20px;
+        ">
 
             <a href="tel:112"
-               style="flex:1; text-align:center; padding:14px;
-               background:#d32f2f; color:white; text-decoration:none;
-               border-radius:10px; font-weight:bold; font-size:18px;
-               display:block;">
+               style="
+               flex:1;
+               text-align:center;
+               padding:15px 10px;
+               background-color:#d32f2f;
+               color:white;
+               text-decoration:none;
+               border-radius:10px;
+               font-weight:bold;
+               font-size:18px;
+               display:block;
+               ">
                📞 Call 112
             </a>
 
             <a href="tel:108"
-               style="flex:1; text-align:center; padding:14px;
-               background:#1976d2; color:white; text-decoration:none;
-               border-radius:10px; font-weight:bold; font-size:18px;
-               display:block;">
+               style="
+               flex:1;
+               text-align:center;
+               padding:15px 10px;
+               background-color:#1976d2;
+               color:white;
+               text-decoration:none;
+               border-radius:10px;
+               font-weight:bold;
+               font-size:18px;
+               display:block;
+               ">
                🚑 Call 108
             </a>
 
         </div>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
-
 
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
