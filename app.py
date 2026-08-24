@@ -637,6 +637,11 @@ FUZZY_RED_FLAGS = [
     "pregnancy bleeding",
     "baby not breathing",
 ]
+def detect_multilingual_emergency_patterns(text):
+    """
+    Detect common emergency symptom combinations across
+    English, Hindi, Tamil, Telugu, Malayalam, Kannada,
+    Bengali, and Marathi.
 
 # =========================================================
 # FIRST-AID DETECTION
