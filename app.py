@@ -1187,16 +1187,16 @@ Language context: {language}
                     f"**{category}** — {', '.join(matches)}"
                 )
 
-            st.error(
+        st.error(
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
 
-            st.info(
+        st.info(
                 "🛑 Emergency detected — normal AI guidance will be skipped."
             )
 
-            st.stop()
+        st.stop()
 
         # -------------------------------------------------
         # GEMINI PROMPT
