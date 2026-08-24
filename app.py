@@ -1404,7 +1404,7 @@ elif language == "Hindi":
                     "• निकटतम अस्पताल जाएं।"
                 )
 
-            elif language == "Telugu":
+elif language == "Telugu":
                 st.write(
                     "• వ్యక్తిని ఒంటరిగా వదిలివేయకండి.\n"
                     "• వెంటనే వైద్య సహాయం పొందండి.\n"
@@ -1412,7 +1412,7 @@ elif language == "Hindi":
                     "• సమీప ఆసుపత్రికి వెళ్లండి."
                 )
 
-            elif language == "Malayalam":
+elif language == "Malayalam":
                 st.write(
                     "• വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്.\n"
                     "• ഉടൻ മെഡിക്കൽ സഹായം നേടുക.\n"
@@ -1420,7 +1420,7 @@ elif language == "Hindi":
                     "• അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക."
                 )
 
-            elif language == "Kannada":
+elif language == "Kannada":
                 st.write(
                     "• ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ.\n"
                     "• ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ.\n"
@@ -1428,7 +1428,7 @@ elif language == "Hindi":
                     "• ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ."
                 )
 
-            elif language == "Bengali":
+elif language == "Bengali":
                 st.write(
                     "• ব্যক্তিকে একা রাখবেন না।\n"
                     "• অবিলম্বে চিকিৎসা সহায়তা নিন।\n"
@@ -1436,7 +1436,7 @@ elif language == "Hindi":
                     "• নিকটস্থ হাসপাতালে যান।"
                 )
 
-            elif language == "Marathi":
+elif language == "Marathi":
                 st.write(
                     "• व्यक्तीला एकटे सोडू नका.\n"
                     "• त्वरित वैद्यकीय मदत घ्या.\n"
@@ -1444,7 +1444,7 @@ elif language == "Hindi":
                     "• जवळच्या रुग्णालयात जा."
                 )
 
-            else:
+else:
                 st.write(
                     "• Do not leave the person alone.\n"
                     "• Seek immediate medical help.\n"
