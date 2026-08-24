@@ -1105,10 +1105,6 @@ Language context: {language}
             if detected_flags
             else "No local red-flag keyword was detected."
         )
-        if detected_flags:
-            st.info("🛑 Emergency detected — normal AI guidance will be skipped.")
-            st.stop()
-
         prompt = f"""
 You are Saathi AI Health Agent.
 
