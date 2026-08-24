@@ -912,82 +912,42 @@ def show_emergency_alert(language):
             margin-bottom:20px;
         ">
 
+            <a href="tel:112"
+               style="
+                   flex:1;
+                   text-align:center;
+                   padding:15px 10px;
+                   background-color:#d32f2f;
+                   color:white;
+                   text-decoration:none;
+                   border-radius:10px;
+                   font-weight:bold;
+                   font-size:18px;
+                   display:block;
+               ">
+                📞 Call 112
+            </a>
+
+            <a href="tel:108"
+               style="
+                   flex:1;
+                   text-align:center;
+                   padding:15px 10px;
+                   background-color:#1976d2;
+                   color:white;
+                   text-decoration:none;
+                   border-radius:10px;
+                   font-weight:bold;
+                   font-size:18px;
+                   display:block;
+               ">
+                🚑 Call 108
+            </a>
+
         </div>
         """,
         unsafe_allow_html=True
     )
-
-# =========================================================
-# LOCAL FALLBACK GUIDANCE
-# =========================================================
-
-def show_local_fallback(language, detected_flags):
-    """Show safe guidance when Gemini is unavailable."""
-    if detected_flags:
-        if language == "Hindi":
-            st.error("🚨 संभावित आपातकाल: तुरंत चिकित्सा मूल्यांकन की व्यवस्था करें।")
-            st.write(
-                "व्यक्ति को अकेला न छोड़ें और स्थिति गंभीर होने पर "
-                "स्थानीय आपातकालीन सेवा/निकटतम स्वास्थ्य सुविधा से तुरंत संपर्क करें।"
-            )
-
-        elif language == "Tamil":
-            st.error("🚨 சாத்தியமான அவசர நிலை: உடனடி மருத்துவ மதிப்பீடு தேவைப்படலாம்.")
-            st.write(
-                "நபரை தனியாக விடாதீர்கள். நிலை தீவிரமாக இருந்தால் "
-                "உடனடியாக அவசர மருத்துவ உதவியை அணுகுங்கள்."
-            )
-
-        elif language == "Telugu":
-            st.error("🚨 సాధ్యమైన అత్యవసర పరిస్థితి: వెంటనే వైద్య పరీక్ష అవసరం కావచ్చు.")
-            st.write(
-                "వ్యక్తిని ఒంటరిగా వదలకండి. పరిస్థితి తీవ్రంగా ఉంటే "
-                "వెంటనే అత్యవసర వైద్య సహాయం పొందండి."
-            )
-
-        elif language == "Malayalam":
-            st.error("🚨 സാധ്യതയുള്ള അടിയന്തരാവസ്ഥ: ഉടൻ മെഡിക്കൽ പരിശോധന ആവശ്യമായേക്കാം.")
-            st.write(
-                "വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്. ഗുരുതരമാണെങ്കിൽ "
-                "ഉടൻ അടിയന്തര മെഡിക്കൽ സഹായം തേടുക."
-            )
-
-        elif language == "Kannada":
-            st.error("🚨 ಸಾಧ್ಯವಾದ ತುರ್ತು ಪರಿಸ್ಥಿತಿ: ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆ ಅಗತ್ಯವಾಗಬಹುದು.")
-            st.write(
-                "ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ. ಸ್ಥಿತಿ ಗಂಭೀರವಾಗಿದ್ದರೆ "
-                "ತಕ್ಷಣ ತುರ್ತು ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ."
-            )
-
-        elif language == "Bengali":
-            st.error("🚨 সম্ভাব্য জরুরি অবস্থা: অবিলম্বে চিকিৎসা মূল্যায়ন প্রয়োজন হতে পারে।")
-            st.write(
-                "ব্যক্তিকে একা রাখবেন না। অবস্থা গুরুতর হলে "
-                "অবিলম্বে জরুরি চিকিৎসা সহায়তা নিন।"
-            )
-
-        elif language == "Marathi":
-            st.error("🚨 संभाव्य आपत्कालीन स्थिती: तातडीची वैद्यकीय तपासणी आवश्यक असू शकते.")
-            st.write(
-                "व्यक्तीला एकटे सोडू नका. स्थिती गंभीर असल्यास "
-                "त्वरित आपत्कालीन वैद्यकीय मदत घ्या."
-            )
-
-        else:
-            st.error("🚨 Possible emergency: urgent medical assessment may be needed.")
-            st.write(
-                "Do not leave the person alone. If the person is seriously unwell, "
-                "seek urgent emergency medical care."
-            )
-
-    else:
-        st.info(
-            "Saathi's AI response is temporarily unavailable. "
-            "The local safety screen found no emergency keyword, "
-            "but this does not rule out a medical emergency."
-        )
-
-
 # =========================================================
 # ASK SAATHI
 # =========================================================
