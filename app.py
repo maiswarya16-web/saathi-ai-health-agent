@@ -17,7 +17,6 @@ st.set_page_config(
 # GEMINI CONFIGURATION
 # =========================================================
 
-# Keep the model name that your API project supports.
 MODEL_NAME = "gemini-3.6-flash"
 
 
@@ -30,7 +29,6 @@ client = get_gemini_client()
 
 
 def call_gemini(contents):
-    """Make one Gemini request."""
     return client.models.generate_content(
         model=MODEL_NAME,
         contents=contents,
@@ -38,7 +36,6 @@ def call_gemini(contents):
 
 
 def classify_gemini_error(error):
-    """Return a user-friendly error category without crashing the app."""
     text = str(error)
     upper = text.upper()
 
@@ -77,25 +74,19 @@ def show_gemini_error(error):
     if category == "limit":
         st.warning("⏳ Gemini API request limit reached.")
         st.info(
-            "The health red-flag checker still works locally. "
-            "Please wait for the Gemini limit to become available."
+            "The local health red-flag checker still works. "
+            "Please try again after the Gemini limit is available."
         )
-
     elif category == "temporary":
         st.warning("⚠️ Saathi's AI service is temporarily unavailable.")
-        st.info("Gemini may be busy. Please try again shortly.")
-
+        st.info("Please try again shortly.")
     elif category == "model":
         st.error(f"❌ Gemini model '{MODEL_NAME}' was not found.")
-        st.info("Check the model name in Google AI Studio/API documentation.")
-
     elif category == "auth":
         st.error("❌ Gemini API authentication failed.")
         st.info("Check GEMINI_API_KEY in Streamlit Secrets.")
-
     else:
         st.error("❌ Saathi encountered a technical error.")
-        st.info("Please check the technical details below.")
 
     with st.expander("Technical error details"):
         st.code(details)
@@ -305,28 +296,25 @@ topic = TOPIC_KEYS[topic_index]
 
 st.subheader("👤 Patient Information")
 
-patient_id = st.text_input(
-    "Patient ID",
-    placeholder="Example: P001"
-)
+patient_id = st.text_input("Patient ID", placeholder="Example: P001")
 
 patient_age = st.number_input(
     "Age",
     min_value=0,
     max_value=120,
     value=0,
-    step=1
+    step=1,
 )
 
 patient_gender = st.selectbox(
     "Gender",
-    ["Not specified", "Female", "Male", "Other"]
+    ["Not specified", "Female", "Male", "Other"],
 )
 
 patient_notes = st.text_area(
     "Relevant Patient Notes",
     placeholder="Example: History of diabetes, hypertension, pregnancy, etc.",
-    height=100
+    height=100,
 )
 
 # =========================================================
@@ -354,53 +342,54 @@ if "voice_question" not in st.session_state:
 if "last_audio_bytes" not in st.session_state:
     st.session_state.last_audio_bytes = None
 
-# Only detect a NEW recording.
 new_audio_bytes = None
 
 if audio_value is not None:
     try:
         candidate_audio = audio_value.getvalue()
-
         if (
             candidate_audio
             and candidate_audio != st.session_state.last_audio_bytes
         ):
             new_audio_bytes = candidate_audio
-
     except Exception:
         new_audio_bytes = None
 
 # =========================================================
-# RED-FLAG DETECTION
+# RED-FLAG DETECTION DATA
 # =========================================================
 
 RED_FLAG_GROUPS = {
     "Possible heart emergency": [
-        "heart pain",
-        "severe chest pain",
-        "chest pain",
-        "pressure in chest",
-        "pressure in the chest",
-        "severe pressure in chest",
-        "severe pressure in the chest",
-        "chest pressure",
-        "tightness in chest",
-        "tightness in the chest",
-        "crushing chest pain",
-        "pain spreading to arm",
-        "pain spreading to the arm",
-        "pain spreading to jaw",
-        "pain spreading to the jaw",
-        "chest pain",
-        "pain spreading to arm", "pain spreading to jaw",
+        "heart attack", "heart pain", "severe chest pain", "chest pain",
+        "pressure in chest", "pressure in the chest",
+        "severe pressure in chest", "severe pressure in the chest",
+        "chest pressure", "tightness in chest", "tightness in the chest",
+        "crushing chest pain", "pain spreading to arm",
+        "pain spreading to the arm", "pain spreading to jaw",
+        "pain spreading to the jaw", "pain spreading to shoulder",
+        "pain spreading to the shoulder",
         "दिल का दौरा", "हार्ट अटैक", "सीने में तेज दर्द", "सीने में दर्द",
-        "सीने में दबाव", "सीने में जकड़न",
+        "सीने में दबाव", "सीने में जकड़न", "दर्द बांह तक",
+        "दर्द हाथ तक", "दर्द जबड़े तक", "दर्द कंधे तक",
         "மாரடைப்பு", "மார்பில் கடுமையான வலி", "மார்பு வலி",
+        "மார்பில் அழுத்தம்", "மார்பு இறுக்கம்", "கைக்கு பரவும் வலி",
+        "தாடைக்கு பரவும் வலி", "தோளுக்கு பரவும் வலி",
         "గుండెపోటు", "హార్ట్ అటాక్", "తీవ్రమైన ఛాతీ నొప్పి", "ఛాతీ నొప్పి",
+        "ఛాతీలో ఒత్తిడి", "చేతికి వ్యాపించే నొప్పి", "దవడకు వ్యాపించే నొప్పి",
+        "భుజానికి వ్యాపించే నొప్పి",
         "ഹൃദയാഘാതം", "ഹാർട്ട് അറ്റാക്ക്", "കടുത്ത നെഞ്ചുവേദന", "നെഞ്ചുവേദന",
+        "നെഞ്ചിൽ സമ്മർദ്ദം", "കൈയിലേക്ക് പടരുന്ന വേദന", "താടിയിലേക്ക് പടരുന്ന വേദന",
+        "തോളിലേക്ക് പടരുന്ന വേദന",
         "ಹೃದಯಾಘಾತ", "ಹಾರ್ಟ್ ಅಟ್ಯಾಕ್", "ತೀವ್ರವಾದ ಎದೆ ನೋವು", "ಎದೆ ನೋವು",
-        "হার্ট অ্যাটাক", "তীব্র বুক ব্যথা", "বুকে ব্যথা",
+        "ಎದೆಯಲ್ಲಿ ಒತ್ತಡ", "ತೋಳಿಗೆ ಹರಡುವ ನೋವು", "ದವಡೆಗೆ ಹರಡುವ ನೋವು",
+        "ಭುಜಕ್ಕೆ ಹರಡುವ ನೋವು",
+        "হার্ট অ্যাটাক", "তীব্র বুক ব্যথা", "বুকে ব্যথা", "বুকে চাপ",
+        "হাতে ছড়িয়ে পড়া ব্যথা", "চোয়ালে ছড়িয়ে পড়া ব্যথা",
+        "কাঁধে ছড়িয়ে পড়া ব্যথা",
         "हृदयविकाराचा झटका", "हार्ट अटॅक", "तीव्र छातीत दुखणे", "छातीत दुखणे",
+        "छातीत दाब", "हाताकडे पसरणारी वेदना", "जबड्याकडे पसरणारी वेदना",
+        "खांद्याकडे पसरणारी वेदना",
     ],
     "Possible stroke / brain emergency": [
         "stroke", "signs of stroke", "face drooping", "slurred speech",
@@ -409,45 +398,36 @@ RED_FLAG_GROUPS = {
         "sudden confusion", "sudden severe headache", "worst headache",
         "स्ट्रोक", "लकवा", "चेहरा टेढ़ा", "बोलने में दिक्कत", "अचानक कमजोरी",
         "பக்கவாதம்", "முகம் கோணல்", "பேசுவதில் சிரமம்", "திடீர் பலவீனம்",
+        "ஸ்ட்ரோக்", "பக்கவாதம்",
         "స్ట్రోక్", "పక్షవాతం", "మాట్లాడటంలో ఇబ్బంది", "ఆకస్మిక బలహీనత",
         "പക്ഷാഘാതം", "സംസാരിക്കാൻ ബുദ്ധിമുട്ട്", "പെട്ടെന്നുള്ള ബലഹീനത",
         "ಪಾರ್ಶ್ವವಾಯು", "ಮಾತನಾಡಲು ತೊಂದರೆ", "ಹಠಾತ್ ದೌರ್ಬಲ್ಯ",
         "পক্ষাঘাত", "স্ট্রোক", "কথা বলতে অসুবিধা", "হঠাৎ দুর্বলতা",
+        "स्ट्रोक", "पक्षाघात", "बोलताना त्रास", "अचानक अशक्तपणा",
     ],
     "Severe breathing emergency": [
-        "difficulty breathing", "severe difficulty breathing", "shortness of breath",
-        "cannot breathe", "can't breathe", "breathing stopped", "not breathing",
-        "blue lips", "blue skin", "choking",
-        "सांस लेने में कठिनाई", "सांस लेने में दिक्कत", "सांस नहीं आ रही",
-        "सांस नहीं ले पा रहा", "होंठ नीले", "त्वचा नीली",
+        "difficulty breathing", "severe difficulty breathing",
+        "shortness of breath", "cannot breathe", "can't breathe",
+        "breathing stopped", "not breathing", "blue lips", "blue skin",
+        "choking", "सांस लेने में कठिनाई", "सांस लेने में दिक्कत",
+        "सांस नहीं आ रही", "सांस नहीं ले पा रहा", "होंठ नीले", "त्वचा नीली",
         "மூச்சு விட முடியவில்லை", "சுவாசிப்பதில் சிரமம்",
-        "శ్వాస తీసుకోవడంలో ఇబ్బంది", "ఊపిరి తీసుకోలేకపోతున్నాను",
-        "ശ്വസിക്കാൻ ബുദ്ധിമുട്ട്", "ശ്വാസം എടുക്കാൻ കഴിയുന്നില്ല",
-        "ಉಸಿರಾಟದ ತೊಂದರೆ", "ಉಸಿರಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ",
-        "শ্বাস নিতে অসুবিধা", "শ্বাস নিতে পারছি না",
-        "श्वास घेण्यास त्रास", "श्वास घेता येत नाही",
+        "மூச்சு விடுவதில் சிரமம்", "శ్వాస తీసుకోవడంలో ఇబ్బంది",
+        "ఊపిరి తీసుకోలేకపోతున్నాను", "ശ്വസിക്കാൻ ബുദ്ധിമുട്ട്",
+        "ശ്വാസം എടുക്കാൻ കഴിയുന്നില്ല", "ಉಸಿರಾಟದ ತೊಂದರೆ",
+        "ಉಸಿರಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ", "শ্বাস নিতে অসুবিধা",
+        "শ্বাস নিতে পারছি না", "श्वास घेण्यास त्रास", "श्वास घेता येत नाही",
     ],
     "Severe bleeding / internal bleeding": [
-        "severe bleeding",
-        "heavy bleeding",
-        "bleeding heavily",
-        "uncontrolled bleeding",
-        "bleeding won't stop",
-        "bleeding does not stop",
-        "bleeding is not stopping",
-        "the bleeding won't stop",
-        "the bleeding does not stop",
-        "the bleeding is not stopping",
-        "wound is bleeding heavily",
-        "wound is bleeding and won't stop",
-        "wound is bleeding and does not stop",
-        "cut is bleeding heavily",
-        "cut is bleeding and won't stop",
-        "blood won't stop",
-        "blood is not stopping",
-        "continuous bleeding",
-        "profuse bleeding",
-        "bleeding won't stop", "vomiting blood", "coughing blood",
+        "severe bleeding", "heavy bleeding", "bleeding heavily",
+        "uncontrolled bleeding", "bleeding won't stop",
+        "bleeding does not stop", "bleeding is not stopping",
+        "the bleeding won't stop", "the bleeding does not stop",
+        "the bleeding is not stopping", "wound is bleeding heavily",
+        "wound is bleeding and won't stop", "wound is bleeding and does not stop",
+        "cut is bleeding heavily", "cut is bleeding and won't stop",
+        "blood won't stop", "blood is not stopping", "continuous bleeding",
+        "profuse bleeding", "vomiting blood", "coughing blood",
         "blood in vomit", "blood in stool", "black stool",
         "बहुत ज्यादा खून बहना", "तेज रक्तस्राव", "खून नहीं रुक रहा",
         "खून की उल्टी", "खून की खांसी", "मल में खून", "काला मल",
@@ -462,13 +442,13 @@ RED_FLAG_GROUPS = {
         "তীব্র রক্তপাত", "অতিরিক্ত রক্তপাত", "রক্তপাত বন্ধ হচ্ছে না",
         "রক্ত বমি", "রক্ত কাশি", "পায়খানায় রক্ত", "কালো পায়খানা",
         "तीव्र रक्तस्त्राव", "जास्त रक्तस्त्राव", "रक्तस्त्राव थांबत नाही",
-        "रक्ताची उलटी", "रक्ताची खोकला", "मलात रक्त", "काळा मल",
+        "रक्ताची उलटी", "मलात रक्त", "काळा मल",
     ],
     "Unconsciousness / seizure": [
         "unconscious", "loss of consciousness", "not responding",
         "unresponsive", "seizure", "convulsion", "fainted and not waking",
-        "बेहोश", "होश नहीं है", "जवाब नहीं दे रहा", "दौरा", "दौरे",
-        "மயக்கம்", "நினைவிழந்த", "சுயநினைவு இல்லை", "வலிப்பு",
+        "not waking", "बेहोश", "होश नहीं है", "जवाब नहीं दे रहा", "दौरा",
+        "दौरे", "நினைவிழந்த", "சுயநினைவு இல்லை", "வலிப்பு",
         "స్పృహ కోల్పోవడం", "స్పృహలో లేరు", "స్పందించడం లేదు", "మూర్ఛ",
         "ബോധരഹിതൻ", "ബോധം നഷ്ടപ്പെടൽ", "പ്രതികരിക്കുന്നില്ല", "അപസ്മാരം",
         "ಪ್ರಜ್ಞಾಹೀನ", "ಪ್ರಜ್ಞೆ ಕಳೆದುಕೊಳ್ಳುವುದು", "ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ", "ಅಪಸ್ಮಾರ",
@@ -491,33 +471,27 @@ RED_FLAG_GROUPS = {
         "rigid abdomen", "severe abdominal swelling",
         "पेट में तेज दर्द", "बहुत तेज पेट दर्द",
         "வயிற்றில் கடுமையான வலி", "கடுமையான வயிற்றுவலி",
-        "తీవ్రమైన కడుపు నొప్పి",
-        "കടുത്ത വയറുവേദന",
-        "ತೀವ್ರ ಹೊಟ್ಟೆ ನೋವು",
-        "তীব্র পেট ব্যথা",
-        "तीव्र पोटदुखी",
+        "తీవ్రమైన కడుపు నొప్పి", "കടുത്ത വയറുവേദന",
+        "ತೀವ್ರ ಹೊಟ್ಟೆ ನೋವು", "তীব্র পেট ব্যথা", "तीव्र पोटदुखी",
     ],
     "Severe headache / brain warning": [
         "severe headache", "worst headache", "sudden severe headache",
-        "thunderclap headache",
-        "बहुत तेज सिरदर्द", "अचानक बहुत तेज सिरदर्द",
+        "thunderclap headache", "बहुत तेज सिरदर्द", "अचानक बहुत तेज सिरदर्द",
         "கடுமையான தலைவலி", "திடீர் கடுமையான தலைவலி",
         "తీవ్రమైన తలనొప్పి", "ఆకస్మిక తీవ్రమైన తలనొప్పి",
-        "കടുത്ത തലവേദന",
-        "ತೀವ್ರ ತಲೆನೋವು",
-        "তীব্র মাথাব্যথা",
+        "കടുത്ത തലവേദന", "ತೀವ್ರ ತಲೆನೋವು", "তীব্র মাথাব্যথা",
         "तीव्र डोकेदुखी",
     ],
     "Poisoning / envenomation": [
         "poisoning", "poison", "overdose", "chemical poisoning",
         "snake bite", "snakebite", "scorpion sting",
         "जहर", "जहर पी लिया", "सांप ने काटा", "बिच्छू ने काटा",
-        "விஷம்", "பாம்பு கடி",
-        "విషం", "పాము కాటు",
-        "വിഷബാധ", "പാമ്പുകടി",
-        "ವಿಷ", "ಹಾವು ಕಡಿತ",
-        "বিষক্রিয়া", "সাপের কামড়",
-        "विषबाधा", "साप चावणे",
+        "விஷம்", "பாம்பு கடி", "தேள் கடி",
+        "విషం", "పాము కాటు", "తేలు కాటు",
+        "വിഷബാധ", "പാമ്പുകടി", "തേൾ കുത്ത്",
+        "ವಿಷ", "ಹಾವು ಕಡಿತ", "ಚೇಳಿನ ಕಚ್ಚು",
+        "বিষক্রিয়া", "সাপের কামড়", "বিছার কামড়",
+        "विषबाधा", "साप चावणे", "विंचू दंश",
     ],
     "Severe dehydration / heat emergency": [
         "severe dehydration", "cannot keep fluids down", "no urine",
@@ -582,12 +556,24 @@ RED_FLAG_GROUPS.update({
         "confusion with fever", "rapid breathing with fever",
         "very sick with fever",
         "बहुत तेज बुखार और भ्रम", "बुखार के साथ बेहोशी",
+        "காய்ச்சலுடன் குழப்பம்", "காய்ச்சலுடன் மயக்கம்",
+        "జ్వరంతో గందరగోళం", "జ్వరంతో అపస్మారం",
+        "പനിയോടൊപ്പം ആശയക്കുഴപ്പം", "പനിയോടൊപ്പം ബോധക്ഷയം",
+        "ಜ್ವರದೊಂದಿಗೆ ಗೊಂದಲ", "ಜ್ವರದೊಂದಿಗೆ ಪ್ರಜ್ಞಾಹೀನತೆ",
+        "জ্বরের সঙ্গে বিভ্রান্তি", "জ্বরের সঙ্গে অজ্ঞান",
+        "तापासोबत गोंधळ", "तापासोबत बेशुद्ध",
     ],
     "Possible diabetic emergency": [
         "severe low blood sugar", "very low blood sugar",
         "hypoglycemia with unconsciousness", "diabetic coma",
         "very high blood sugar with vomiting",
         "मधुमेह में बेहोशी", "बहुत कम शुगर", "बहुत ज्यादा शुगर और उल्टी",
+        "நீரிழிவு மயக்கம்", "மிகக் குறைந்த சர்க்கரை",
+        "చాలా తక్కువ షుగర్", "మధుమేహంలో స్పృహ కోల్పోవడం",
+        "വളരെ കുറഞ്ഞ പഞ്ചസാര", "പ്രമേഹത്തിൽ ബോധക്ഷയം",
+        "ತುಂಬಾ ಕಡಿಮೆ ಸಕ್ಕರೆ", "ಮಧುಮೇಹದಲ್ಲಿ ಪ್ರಜ್ಞಾಹೀನತೆ",
+        "খুব কম শর্করা", "ডায়াবেটিসে অজ্ঞান",
+        "खूप कमी साखर", "मधुमेहात बेशुद्ध",
     ],
     "Possible hypertensive emergency": [
         "very high blood pressure with chest pain",
@@ -595,26 +581,57 @@ RED_FLAG_GROUPS.update({
         "high bp with chest pain", "high bp with weakness",
         "बहुत ज्यादा रक्तचाप और सीने में दर्द",
         "बहुत ज्यादा बीपी और तेज सिरदर्द",
+        "மிகவும் அதிக இரத்த அழுத்தம் மற்றும் மார்பு வலி",
+        "అధిక బీపీతో ఛాతీ నొప్పి", "అధిక బీపీతో తీవ్రమైన తలనొప్పి",
+        "വളരെ ഉയർന്ന രക്തസമ്മർദ്ദവും നെഞ്ചുവേദനയും",
+        "ಅತಿ ಹೆಚ್ಚು ರಕ್ತದೊತ್ತಡ ಮತ್ತು ಎದೆ ನೋವು",
+        "খুব বেশি রক্তচাপ ও বুক ব্যথা",
+        "खूप जास्त रक्तदाब आणि छातीत दुखणे",
     ],
     "Possible severe asthma / airway emergency": [
         "severe asthma attack", "asthma attack cannot speak",
         "wheezing and cannot breathe", "breathing too difficult to speak",
         "गंभीर अस्थमा का दौरा", "अस्थमा में सांस नहीं आ रही",
+        "கடுமையான ஆஸ்துமா", "ஆஸ்துமாவில் மூச்சு வரவில்லை",
+        "తీవ్రమైన ఆస్తమా", "ఆస్తమాలో శ్వాస రావడం లేదు",
+        "ഗുരുതരമായ ആസ്ത്മ", "ആസ്ത്മയിൽ ശ്വാസം കിട്ടുന്നില്ല",
+        "ತೀವ್ರ ಆಸ್ತಮಾ", "ಆಸ್ತಮಾದಲ್ಲಿ ಉಸಿರಾಟ ಆಗುತ್ತಿಲ್ಲ",
+        "তীব্র হাঁপানি", "হাঁপানিতে শ্বাস নিতে পারছি না",
+        "तीव्र दमा", "दम्यामध्ये श्वास घेता येत नाही",
     ],
     "Possible meningitis / serious brain infection": [
         "stiff neck with fever", "fever and stiff neck",
         "severe headache with stiff neck",
         "बुखार और गर्दन अकड़ना", "तेज सिरदर्द और गर्दन अकड़ना",
+        "காய்ச்சல் மற்றும் கழுத்து விறைப்பு",
+        "கடுமையான தலைவலி மற்றும் கழுத்து விறைப்பு",
+        "జ్వరం మరియు మెడ బిగుతు", "తీవ్రమైన తలనొప్పి మరియు మెడ బిగుతు",
+        "പനിയും കഴുത്ത് മുറുക്കവും", "കടുത്ത തലവേദനയും കഴുത്ത് മുറുക്കവും",
+        "ಜ್ವರ ಮತ್ತು ಕುತ್ತಿಗೆ ಬಿಗಿತ", "ತೀವ್ರ ತಲೆನೋವು ಮತ್ತು ಕುತ್ತಿಗೆ ಬಿಗಿತ",
+        "জ্বর ও ঘাড় শক্ত হয়ে যাওয়া", "তীব্র মাথাব্যথা ও ঘাড় শক্ত",
+        "ताप आणि मान आखडणे", "तीव्र डोकेदुखी आणि मान आखडणे",
     ],
     "Possible kidney / urinary emergency": [
         "no urine", "unable to pass urine", "severe flank pain with fever",
         "severe kidney pain with fever", "पेशाब बिल्कुल नहीं हो रहा",
-        "बुखार के साथ तेज कमर दर्द",
+        "बुखार के साथ तेज कमर दर्द", "சிறுநீர் வரவில்லை",
+        "காய்ச்சலுடன் கடுமையான இடுப்பு வலி", "మూత్రం రావడం లేదు",
+        "జ్వరంతో తీవ్రమైన నడుము నొప్పి", "മൂത്രമില്ല",
+        "പനിയോടൊപ്പം കടുത്ത പാർശ്വ വേദന", "ಮೂತ್ರ ಬರುತ್ತಿಲ್ಲ",
+        "ಜ್ವರದೊಂದಿಗೆ ತೀವ್ರ ಸೊಂಟ ನೋವು", "প্রস্রাব হচ্ছে না",
+        "জ্বরের সঙ্গে তীব্র কোমর ব্যথা", "लघवी होत नाही",
+        "तापासोबत तीव्र कंबरदुखी",
     ],
     "Possible eye emergency": [
         "sudden loss of vision", "sudden blindness",
         "chemical in eye with severe pain",
         "अचानक दिखाई नहीं दे रहा", "अचानक दृष्टि चली गई",
+        "திடீரென பார்வை இழப்பு", "திடீரென பார்வை தெரியவில்லை",
+        "అకస్మాత్తుగా చూపు పోయింది", "అకస్మాత్తుగా కనిపించడం లేదు",
+        "പെട്ടെന്ന് കാഴ്ച നഷ്ടപ്പെട്ടു", "പെട്ടെന്ന് കാണുന്നില്ല",
+        "ಹಠಾತ್ ದೃಷ್ಟಿ ಕಳೆದುಕೊಂಡಿತು", "ಹಠಾತ್ ಕಾಣುತ್ತಿಲ್ಲ",
+        "হঠাৎ দৃষ্টি হারানো", "হঠাৎ দেখতে পাচ্ছে না",
+        "अचानक दृष्टी गेली", "अचानक दिसत नाही",
     ],
 })
 
@@ -637,11 +654,154 @@ FUZZY_RED_FLAGS = [
     "pregnancy bleeding",
     "baby not breathing",
 ]
+
+# =========================================================
+# MULTILINGUAL EMERGENCY PATTERN DETECTION
+# =========================================================
+
 def detect_multilingual_emergency_patterns(text):
     """
     Detect common emergency symptom combinations across
     English, Hindi, Tamil, Telugu, Malayalam, Kannada,
     Bengali, and Marathi.
+    """
+    if not text:
+        return []
+
+    normalized = normalize_text(text)
+    detected = []
+
+    def has_any(words):
+        return any(normalize_text(word) in normalized for word in words)
+
+    # Severe bleeding
+    bleeding = [
+        "bleeding", "blood", "bleed",
+        "खून", "रक्तस्राव",
+        "இரத்தம்", "ரத்தம்",
+        "రక్తం",
+        "രക്തം",
+        "ರಕ್ತ",
+        "রক্ত",
+        "रक्त",
+    ]
+
+    heavy_bleeding = [
+        "heavy", "heavily", "severe", "a lot", "won't stop",
+        "does not stop", "not stopping", "continuous",
+        "uncontrolled", "profuse",
+        "बहुत ज्यादा", "तेज", "नहीं रुक",
+        "அதிக", "நிற்கவில்லை", "நிறுத்த முடியவில்லை",
+        "ఎక్కువ", "ఆగడం లేదు",
+        "അമിതമായ", "നിൽക്കുന്നില്ല",
+        "ಹೆಚ್ಚಿನ", "ನಿಲ್ಲುತ್ತಿಲ್ಲ",
+        "অতিরিক্ত", "বন্ধ হচ্ছে না",
+        "जास्त", "थांबत नाही",
+    ]
+
+    if has_any(bleeding) and has_any(heavy_bleeding):
+        detected.append(
+            ("Severe bleeding / internal bleeding",
+             ["possible severe/heavy bleeding"])
+        )
+
+    # Heart emergency: require chest/heart + pain/pressure/tightness,
+    # OR chest + spreading pain.
+    chest = [
+        "chest", "heart",
+        "सीना", "सीने", "दिल",
+        "மார்பு", "இதயம்",
+        "ఛాతీ", "గుండె",
+        "നെഞ്ച്", "ഹൃദയം",
+        "ಎದೆ", "ಹೃದಯ",
+        "বুক", "হৃদয়",
+        "छाती", "हृदय",
+    ]
+
+    severe_chest = [
+        "pain", "pressure", "tightness", "crushing",
+        "severe", "heavy", "squeezing",
+        "दर्द", "दबाव", "जकड़न", "तेज",
+        "வலி", "அழுத்தம்", "இறுக்கம்", "கடுமையான",
+        "నొప్పి", "ఒత్తిడి", "బిగుతు", "తీవ్రమైన",
+        "വേദന", "സമ്മർദ്ദം", "മുറുക്കം", "കടുത്ത",
+        "ನೋವು", "ಒತ್ತಡ", "ಬಿಗಿತ", "ತೀವ್ರ",
+        "ব্যথা", "চাপ", "টান", "তীব্র",
+        "वेदना", "दाब", "घट्टपणा", "तीव्र",
+    ]
+
+    spreading_pain = [
+        "arm", "jaw", "shoulder",
+        "बांह", "हाथ", "जबड़ा", "कंधा",
+        "கை", "தாடை", "தோள்",
+        "చేయి", "దవడ", "భుజం",
+        "കൈ", "താടി", "തോൾ",
+        "ತೋಳು", "ದವಡೆ", "ಭುಜ",
+        "হাত", "চোয়াল", "কাঁধ",
+        "हात", "जबडा", "खांदा",
+    ]
+
+    if has_any(chest) and has_any(severe_chest):
+        detected.append(
+            ("Possible heart emergency",
+             ["possible severe chest/heart symptoms"])
+        )
+    elif has_any(chest) and has_any(spreading_pain):
+        detected.append(
+            ("Possible heart emergency",
+             ["possible pain spreading to arm/jaw/shoulder"])
+        )
+
+    # Severe breathing emergency
+    breathing = [
+        "breathing", "breathe", "breath",
+        "सांस", "श्वास",
+        "மூச்சு", "சுவாசம்",
+        "శ్వాస", "ఊపిరి",
+        "ശ്വാസം", "ശ്വസനം",
+        "ಉಸಿರು", "ಉಸಿರಾಟ",
+        "শ্বাস",
+    ]
+
+    breathing_danger = [
+        "cannot", "can't", "difficulty", "difficult",
+        "struggling", "stopped", "not",
+        "नहीं", "मुश्किल", "दिक्कत",
+        "முடியவில்லை", "சிரமம்",
+        "లేకపోతున్న", "ఇబ్బంది",
+        "കഴിയുന്നില്ല", "ബുദ്ധിമുട്ട്",
+        "ಆಗುತ್ತಿಲ್ಲ", "ತೊಂದರೆ",
+        "পারছি না", "অসুবিধা",
+        "जमत नाही", "त्रास",
+    ]
+
+    if has_any(breathing) and has_any(breathing_danger):
+        detected.append(
+            ("Severe breathing emergency",
+             ["possible severe breathing difficulty"])
+        )
+
+    # Unconsciousness
+    unconscious = [
+        "unconscious", "unresponsive", "not responding",
+        "not waking", "fainted",
+        "बेहोश", "होश नहीं", "जवाब नहीं",
+        "நினைவிழந்த", "சுயநினைவு இல்லை",
+        "స్పృహ కోల్పోయ", "స్పందించడం లేదు",
+        "ബോധരഹിത", "പ്രതികരിക്കുന്നില്ല",
+        "ಪ್ರಜ್ಞಾಹೀನ", "ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ",
+        "অজ্ঞান", "সাড়া দিচ্ছে না",
+        "बेशुद्ध", "प्रतिसाद देत नाही",
+    ]
+
+    if has_any(unconscious):
+        detected.append(
+            ("Unconsciousness / seizure",
+             ["possible unconsciousness"])
+        )
+
+    return detected
+
 
 # =========================================================
 # FIRST-AID DETECTION
@@ -667,26 +827,29 @@ FIRST_AID_GUIDES = {
         "கடுமையான இரத்தப்போக்கு",
         "அதிக இரத்தப்போக்கு",
         "இரத்தம் நிற்கவில்லை",
+        "తీవ్రమైన రక్తస్రావం",
+        "ఎక్కువ రక్తస్రావం",
+        "രക്തം നിൽക്കുന്നില്ല",
+        "ತೀವ್ರ ರಕ್ತಸ್ರಾವ",
+        "রক্তপাত বন্ধ হচ্ছে না",
+        "रक्तस्त्राव थांबत नाही",
     ],
-        "Burn": [
-        "burn",
-        "burned",
-        "burnt",
-        "scald",
-        "hot water burn",
-        "fire burn",
-        "oil burn",
-        "காயம் சுட்டது",
-        "தீக்காயம்",
-        "சூடு காயம்",
+    "Burn": [
+        "burn", "burned", "burnt", "scald",
+        "hot water burn", "fire burn", "oil burn",
+        "காயம் சுட்டது", "தீக்காயம்", "சூடு காயம்",
         "சூடான தண்ணீரால் சுட்டது",
-        "जलना",
-        "जल गया",
-        "गर्म पानी से जलना",
+        "जलना", "जल गया", "गर्म पानी से जलना",
+        "తీవ్రమైన కాలిన గాయం", "కాలిన గాయం",
+        "പൊള്ളൽ", "ചൂടുവെള്ളത്തിൽ പൊള്ളൽ",
+        "ಸುಟ್ಟ ಗಾಯ", "ಬಿಸಿ ನೀರಿನಿಂದ ಸುಟ್ಟ ಗಾಯ",
+        "পোড়া", "গরম পানিতে পোড়া",
+        "भाजणे", "गरम पाण्याने भाजणे",
     ],
 }
+
+
 def detect_first_aid(text):
-    """Detect whether the question matches a first-aid situation."""
     if not text:
         return None
 
@@ -698,6 +861,8 @@ def detect_first_aid(text):
                 return guide_name
 
     return None
+
+
 # =========================================================
 # FIRST-AID VISUAL GUIDE
 # =========================================================
@@ -705,28 +870,17 @@ def detect_first_aid(text):
 def show_first_aid_guide(language, first_aid_type):
 
     if first_aid_type == "Severe Bleeding":
-
-        st.image(
-            "first_aid_severe_bleeding.png",
-            width=350
-        )
-
+        st.image("first_aid_severe_bleeding.png", width=350)
         st.error("🩸 Severe bleeding")
-
         st.write(
             "• Apply firm pressure to the wound.\n"
             "• Do not remove soaked cloth; add another cloth on top.\n"
             "• Get urgent medical help."
         )
+
     elif first_aid_type == "Burn":
-
-        st.image(
-            "first_aid_burn.png",
-            width=350
-        )
-
+        st.image("first_aid_burn.png", width=350)
         st.error("🔥 Burn")
-
         st.write(
             "• Cool the burn with clean, cool running water.\n"
             "• Do not apply ice, toothpaste, or oil.\n"
@@ -734,94 +888,67 @@ def show_first_aid_guide(language, first_aid_type):
         )
 
 
+# =========================================================
+# TEXT NORMALIZATION
+# =========================================================
+
 def normalize_text(text):
-    """Normalize text for reliable multilingual keyword matching."""
     text = str(text).lower().replace("’", "'")
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
 
 def collapse_repeated_letters(text):
-    """Reduce accidental repeated letters in typed English words."""
     return re.sub(r"(.)\1{1,}", r"\1", normalize_text(text))
 
 
+# =========================================================
+# RED-FLAG DETECTION
+# =========================================================
+
 def detect_red_flags(text):
-    """Return emergency categories and matched terms."""
     if not text:
         return []
 
     normalized = normalize_text(text)
     detected = []
-    
-    detected.extend(
-        detect_multilingual_emergency_patterns(text)
-    )
-    # -----------------------------------------------------
-    # SMART SEVERE BLEEDING DETECTION
-    # -----------------------------------------------------
 
+    # Multilingual combination patterns
+    detected.extend(detect_multilingual_emergency_patterns(text))
+
+    # Smart severe bleeding detection
     bleeding_words = [
-        "bleeding",
-        "blood",
-        "bleed",
-        "रक्तस्राव",
-        "खून",
-        "இரத்தம்",
-        "ரத்தம்",
-        "రక్తం",
-        "രക്തം",
-        "ರಕ್ತ",
-        "রক্ত",
+        "bleeding", "blood", "bleed",
+        "रक्तस्राव", "खून",
+        "இரத்தம்", "ரத்தம்",
+        "రక్తం", "രക്തം", "ರಕ್ತ", "রক্ত", "रक्त",
     ]
 
     severe_bleeding_words = [
-        "heavy",
-        "heavily",
-        "severe",
-        "severely",
-        "a lot",
-        "lot of blood",
-        "won't stop",
-        "does not stop",
-        "not stopping",
-        "continuous",
-        "uncontrolled",
-        "profuse",
-        "बहुत ज्यादा",
-        "तेज",
-        "नहीं रुक",
-        "நிற்கவில்லை",
-        "நிறுத்த முடியவில்லை",
-        "அதிக",
-        "ఆగడం లేదు",
-        "ఎక్కువ",
-        "നിൽക്കുന്നില്ല",
-        "അമിതമായ",
-        "ನಿಲ್ಲುತ್ತಿಲ್ಲ",
-        "ಹೆಚ್ಚಿನ",
-        "বন্ধ হচ্ছে না",
-        "অতিরিক্ত",
+        "heavy", "heavily", "severe", "severely", "a lot",
+        "lot of blood", "won't stop", "does not stop",
+        "not stopping", "continuous", "uncontrolled", "profuse",
+        "बहुत ज्यादा", "तेज", "नहीं रुक",
+        "நிற்கவில்லை", "நிறுத்த முடியவில்லை", "அதிக",
+        "ఆగడం లేదు", "ఎక్కువ",
+        "നിൽക്കുന്നില്ല", "അമിതമായ",
+        "ನಿಲ್ಲುತ್ತಿಲ್ಲ", "ಹೆಚ್ಚಿನ",
+        "বন্ধ হচ্ছে না", "অতিরিক্ত",
+        "थांबत नाही", "जास्त",
     ]
 
-    has_bleeding = any(
-        word in normalized
-        for word in bleeding_words
-    )
-
+    has_bleeding = any(word in normalized for word in bleeding_words)
     has_severe_bleeding = any(
-        word in normalized
-        for word in severe_bleeding_words
+        word in normalized for word in severe_bleeding_words
     )
 
     if has_bleeding and has_severe_bleeding:
         detected.append(
-            (
-                "Severe bleeding / internal bleeding",
-                ["possible severe/heavy bleeding"]
-            )
+            ("Severe bleeding / internal bleeding",
+             ["possible severe/heavy bleeding"])
         )
 
+    # Exact red-flag keyword matching
     for category, keywords in RED_FLAG_GROUPS.items():
         exact_matches = []
 
@@ -830,8 +957,15 @@ def detect_red_flags(text):
                 exact_matches.append(keyword)
 
         if exact_matches:
-            detected.append((category, exact_matches[:3]))
+            existing = next(
+                (item for item in detected if item[0] == category),
+                None,
+            )
 
+            if existing is None:
+                detected.append((category, exact_matches[:3]))
+
+    # Fuzzy English matching
     english_words = re.findall(r"[a-z]+(?:'[a-z]+)?", normalized)
     english_text = " ".join(english_words)
     collapsed_text = collapse_repeated_letters(english_text)
@@ -842,7 +976,9 @@ def detect_red_flags(text):
 
         if collapsed_phrase in collapsed_text:
             for category, keywords in RED_FLAG_GROUPS.items():
-                normalized_keywords = [normalize_text(k) for k in keywords]
+                normalized_keywords = [
+                    normalize_text(k) for k in keywords
+                ]
 
                 if phrase in normalized_keywords:
                     existing = next(
@@ -854,7 +990,6 @@ def detect_red_flags(text):
                         detected.append(
                             (category, [f"possible match: {phrase}"])
                         )
-
                     break
 
             continue
@@ -880,7 +1015,9 @@ def detect_red_flags(text):
 
         if best_ratio >= 0.86:
             for category, keywords in RED_FLAG_GROUPS.items():
-                normalized_keywords = [normalize_text(k) for k in keywords]
+                normalized_keywords = [
+                    normalize_text(k) for k in keywords
+                ]
 
                 if phrase in normalized_keywords:
                     existing = next(
@@ -892,10 +1029,18 @@ def detect_red_flags(text):
                         detected.append(
                             (category, [f"possible match: {phrase}"])
                         )
-
                     break
 
-    return detected
+    # Remove duplicate categories
+    unique_detected = []
+    seen_categories = set()
+
+    for item in detected:
+        if item[0] not in seen_categories:
+            unique_detected.append(item)
+            seen_categories.add(item[0])
+
+    return unique_detected
 
 
 # =========================================================
@@ -906,7 +1051,7 @@ RED_FLAG_TITLE = {
     "English": "🚨 POSSIBLE RED FLAG / URGENT WARNING",
     "Hindi": "🚨 संभावित गंभीर चेतावनी / तत्काल चिकित्सा सहायता",
     "Tamil": "🚨 சாத்தியமான ஆபத்து அறிகுறி / அவசர எச்சரிக்கை",
-    "Telugu": "🚨 ప్రమాద సూచన / అత్యవసర హెచ్చరిక",
+    "Telugu": "🚨 ప్రమాద సూచన / అత్యవசర హెచ్చరిక",
     "Malayalam": "🚨 സാധ്യതയുള്ള അപകട സൂചന / അടിയന്തര മുന്നറിയിപ്പ്",
     "Kannada": "🚨 ಸಾಧ್ಯವಾದ ಅಪಾಯದ ಸೂಚನೆ / ತುರ್ತು ಎಚ್ಚರಿಕೆ",
     "Bengali": "🚨 সম্ভাব্য বিপদের লক্ষণ / জরুরি সতর্কতা",
@@ -950,18 +1095,13 @@ RED_FLAG_MESSAGE = {
     ),
 }
 
+
 # =========================================================
 # BIG EMERGENCY ACTION PANEL
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show emergency information with clickable call buttons."""
-
     st.error("🚨 EMERGENCY")
-
-    # -----------------------------------------------------
-    # EMERGENCY MESSAGE
-    # -----------------------------------------------------
 
     if language == "Tamil":
         st.markdown("## 🚨 அவசர நிலை")
@@ -1003,21 +1143,26 @@ def show_emergency_alert(language):
         st.markdown("### 🏥 Go to the nearest hospital")
         st.markdown("### ⚠️ DO NOT WAIT")
 
-    # -----------------------------------------------------
-    # EMERGENCY BUTTON TEST
-    # -----------------------------------------------------
-
     st.markdown("### 🚨 Emergency Contacts")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("📞 Call 112", key="emergency_112", use_container_width=True):
+        if st.button(
+            "📞 Call 112",
+            key="emergency_112",
+            use_container_width=True,
+        ):
             st.info("📞 Please call 112 from your phone.")
 
     with col2:
-        if st.button("🚑 Call 108", key="emergency_108", use_container_width=True):
+        if st.button(
+            "🚑 Call 108",
+            key="emergency_108",
+            use_container_width=True,
+        ):
             st.info("🚑 Please call 108 from your phone.")
+
 
 # =========================================================
 # ASK SAATHI
@@ -1032,7 +1177,7 @@ if st.button(
     final_question = question.strip()
 
     # -----------------------------------------------------
-    # VOICE TRANSCRIPTION: ONLY ON BUTTON CLICK
+    # VOICE TRANSCRIPTION
     # -----------------------------------------------------
 
     if not final_question and new_audio_bytes:
@@ -1056,9 +1201,7 @@ Language context: {language}
                     {
                         "role": "user",
                         "parts": [
-                            {
-                                "text": voice_prompt
-                            },
+                            {"text": voice_prompt},
                             {
                                 "inline_data": {
                                     "mime_type": "audio/wav",
@@ -1072,7 +1215,6 @@ Language context: {language}
 
             if voice_response and voice_response.text:
                 final_question = voice_response.text.strip()
-              
 
                 st.session_state.voice_question = final_question
                 st.session_state.last_audio_bytes = new_audio_bytes
@@ -1085,28 +1227,11 @@ Language context: {language}
             show_gemini_error(e)
 
     # -----------------------------------------------------
-    # PATIENT VISIT RECORD
-    # -----------------------------------------------------
-
-    patient_record = {
-        "patient_id": patient_id.strip() if patient_id else "",
-        "age": patient_age,
-        "gender": patient_gender,
-        "notes": patient_notes.strip() if patient_notes else "",
-        "health_topic": topic,
-        "language": language,
-        "question": final_question,
-    }
-    
-    # -----------------------------------------------------
     # USE LAST SUCCESSFUL VOICE TRANSCRIPTION
     # -----------------------------------------------------
 
     if not final_question and st.session_state.voice_question:
         final_question = st.session_state.voice_question.strip()
-
-        # Clear the old transcription so it is not reused
-        # accidentally on a later button click.
         st.session_state.voice_question = ""
 
     # -----------------------------------------------------
@@ -1117,12 +1242,10 @@ Language context: {language}
         st.warning(ui["empty"])
 
     else:
-        st.info(
-            f"📝 Question received:\n\n{final_question}"
-        )
+        st.info(f"📝 Question received:\n\n{final_question}")
 
-              # -------------------------------------------------
-        # LOCAL RED-FLAG CHECK
+        # -------------------------------------------------
+        # LOCAL SAFETY CHECK
         # -------------------------------------------------
 
         detected_flags = detect_red_flags(final_question)
@@ -1135,7 +1258,7 @@ Language context: {language}
         if first_aid_type:
             show_first_aid_guide(
                 language,
-                first_aid_type
+                first_aid_type,
             )
 
         # -------------------------------------------------
@@ -1143,19 +1266,19 @@ Language context: {language}
         # -------------------------------------------------
 
         if detected_flags:
-           show_emergency_alert(language)
+            show_emergency_alert(language)
 
-           st.markdown(
+            st.markdown(
                 f"### {RED_FLAG_TITLE[language]}"
             )
 
-           st.warning(
+            st.warning(
                 f"🚨 {RED_FLAG_MESSAGE[language]}"
             )
 
-           st.markdown("### 🆘 What to do now")
+            st.markdown("### 🆘 What to do now")
 
-           if language == "Tamil":
+            if language == "Tamil":
                 st.write(
                     "• நபரை தனியாக விடாதீர்கள்.\n"
                     "• உடனடி மருத்துவ உதவியை பெறுங்கள்.\n"
@@ -1163,7 +1286,7 @@ Language context: {language}
                     "• அருகிலுள்ள மருத்துவமனைக்கு செல்லுங்கள்."
                 )
 
-           elif language == "Hindi":
+            elif language == "Hindi":
                 st.write(
                     "• व्यक्ति को अकेला न छोड़ें।\n"
                     "• तुरंत चिकित्सा सहायता लें।\n"
@@ -1171,7 +1294,47 @@ Language context: {language}
                     "• निकटतम अस्पताल जाएं।"
                 )
 
-           else:
+            elif language == "Telugu":
+                st.write(
+                    "• వ్యక్తిని ఒంటరిగా వదిలివేయకండి.\n"
+                    "• వెంటనే వైద్య సహాయం పొందండి.\n"
+                    "• భారతదేశంలో 112 లేదా స్థానిక అంబులెన్స్ సేవకు కాల్ చేయండి.\n"
+                    "• సమీప ఆసుపత్రికి వెళ్లండి."
+                )
+
+            elif language == "Malayalam":
+                st.write(
+                    "• വ്യക്തിയെ ഒറ്റയ്ക്ക് വിടരുത്.\n"
+                    "• ഉടൻ മെഡിക്കൽ സഹായം നേടുക.\n"
+                    "• ഇന്ത്യയിൽ 112 അല്ലെങ്കിൽ പ്രാദേശിക ആംബുലൻസ് സേവനത്തെ ബന്ധപ്പെടുക.\n"
+                    "• അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക."
+                )
+
+            elif language == "Kannada":
+                st.write(
+                    "• ವ್ಯಕ್ತಿಯನ್ನು ಒಬ್ಬರೇ ಬಿಡಬೇಡಿ.\n"
+                    "• ತಕ್ಷಣ ವೈದ್ಯಕೀಯ ಸಹಾಯ ಪಡೆಯಿರಿ.\n"
+                    "• ಭಾರತದಲ್ಲಿ 112 ಅಥವಾ ಸ್ಥಳೀಯ ಆಂಬ್ಯುಲೆನ್ಸ್ ಸೇವೆಗೆ ಕರೆ ಮಾಡಿ.\n"
+                    "• ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ."
+                )
+
+            elif language == "Bengali":
+                st.write(
+                    "• ব্যক্তিকে একা রাখবেন না।\n"
+                    "• অবিলম্বে চিকিৎসা সহায়তা নিন।\n"
+                    "• ভারতে 112 বা স্থানীয় অ্যাম্বুলেন্স পরিষেবায় যোগাযোগ করুন।\n"
+                    "• নিকটস্থ হাসপাতালে যান।"
+                )
+
+            elif language == "Marathi":
+                st.write(
+                    "• व्यक्तीला एकटे सोडू नका.\n"
+                    "• त्वरित वैद्यकीय मदत घ्या.\n"
+                    "• भारतात 112 किंवा स्थानिक रुग्णवाहिका सेवेशी संपर्क करा.\n"
+                    "• जवळच्या रुग्णालयात जा."
+                )
+
+            else:
                 st.write(
                     "• Do not leave the person alone.\n"
                     "• Seek immediate medical help.\n"
@@ -1179,43 +1342,33 @@ Language context: {language}
                     "• Go to the nearest appropriate hospital."
                 )
 
-           st.markdown("### 🚨 Warning signs detected")
+            st.markdown("### 🚨 Warning signs detected")
 
-           for category, matches in detected_flags:
+            for category, matches in detected_flags:
                 st.markdown(
                     f"**{category}** — {', '.join(matches)}"
                 )
 
-           st.error(
+            st.error(
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
 
-           st.info(
+            st.info(
                 "🛑 Emergency detected — normal AI guidance will be skipped."
             )
 
-           st.stop()
+            st.stop()
 
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
 
-        detected_text = (
-            "; ".join(
-                f"{category}: {', '.join(matches)}"
-                for category, matches in detected_flags
-            )
-            if detected_flags
-            else "No local red-flag keyword was detected."
-        )
         prompt = f"""
 You are Saathi AI Health Agent.
 
 You are a fast, practical digital health assistant designed for
 frontline health workers such as ASHA and ANM workers in India.
-
-The health worker may have only a few seconds to read your response.
 
 Patient information:
 Patient ID: {patient_id if patient_id else "Not provided"}
@@ -1233,7 +1386,7 @@ Health question:
 {final_question}
 
 Local safety screen:
-{detected_text}
+No local emergency red-flag keyword was detected.
 
 =========================================================
 IMPORTANT RESPONSE RULES
@@ -1243,7 +1396,7 @@ IMPORTANT RESPONSE RULES
 2. Keep the response VERY SHORT and easy to scan.
 3. Do NOT give long explanations.
 4. Do NOT write textbook-style information.
-5. Do NOT repeat the patients question.
+5. Do NOT repeat the patient's question.
 6. Do NOT diagnose.
 7. Do NOT prescribe medicines.
 8. Do NOT give medicine dosages.
@@ -1255,58 +1408,58 @@ IMPORTANT RESPONSE RULES
 14. If the situation is an emergency, put the emergency warning FIRST.
 15. Do not tell a person with emergency warning signs to wait.
 
-========================================================= 
-RISK PRIORITY 
-========================================================= 
- 
-Classify the situation internally as one of: 
- 
-🟢 LOW RISK 
-🟡 MODERATE RISK 
-🟠 HIGH RISK 
-🔴 EMERGENCY 
- 
-Do NOT give a long explanation of the classification. 
- 
-========================================================= 
-RESPONSE FORMAT 
-========================================================= 
- 
-Start with ONE risk level: 
- 
-🟢 LOW RISK 
-or 
-🟡 MODERATE RISK 
-or 
-🟠 HIGH RISK 
-or 
-🔴 EMERGENCY 
- 
-Then provide ONLY these sections: 
- 
-🔎 Possible: 
-Give a very short description of what the symptoms may suggest. 
-Do not diagnose. 
- 
-⚠️ Check: 
-List only the most important symptoms/signs the health worker should check. 
- 
-💡 Do now: 
-Give 2–3 safe and practical actions. 
- 
-🏥 Referral: 
-Clearly say whether routine monitoring, healthcare review, 
-prompt medical evaluation, or immediate emergency care is needed. 
- 
-🚨 Emergency: 
-Only include this section when emergency warning signs are present. 
-Tell the health worker to seek immediate emergency medical care. 
+=========================================================
+RISK PRIORITY
+=========================================================
+
+Classify the situation internally as one of:
+
+🟢 LOW RISK
+🟡 MODERATE RISK
+🟠 HIGH RISK
+🔴 EMERGENCY
+
+Do NOT give a long explanation of the classification.
+
+=========================================================
+RESPONSE FORMAT
+=========================================================
+
+Start with ONE risk level:
+
+🟢 LOW RISK
+or
+🟡 MODERATE RISK
+or
+🟠 HIGH RISK
+or
+🔴 EMERGENCY
+
+Then provide ONLY these sections:
+
+🔎 Possible:
+Give a very short description of what the symptoms may suggest.
+Do not diagnose.
+
+⚠️ Check:
+List only the most important symptoms/signs the health worker should check.
+
+💡 Do now:
+Give 2–3 safe and practical actions.
+
+🏥 Referral:
+Clearly say whether routine monitoring, healthcare review,
+prompt medical evaluation, or immediate emergency care is needed.
+
+🚨 Emergency:
+Only include this section when emergency warning signs are present.
+Tell the health worker to seek immediate emergency medical care.
 
 =========================================================
 EMERGENCY RULE
 =========================================================
 
-If the local safety screen detected a red flag:
+If an emergency is identified from the symptoms:
 
 Start with:
 
@@ -1337,9 +1490,10 @@ The worker should be able to read the response in approximately
 
 Be concise. Be practical. Be safe.
 """
-# -------------------------------------------------
-# GEMINI RESPONSE
-# -------------------------------------------------
+
+        # -------------------------------------------------
+        # GEMINI RESPONSE
+        # -------------------------------------------------
 
         try:
             with st.spinner("🩺 Saathi is preparing guidance..."):
@@ -1354,10 +1508,4 @@ Be concise. Be practical. Be safe.
                 )
 
         except Exception as e:
-            # Local red-flag screening remains usable even
-            # when Gemini is unavailable or rate-limited.
-            show_local_fallback(
-                language,
-                detected_flags,
-            )
             show_gemini_error(e)
