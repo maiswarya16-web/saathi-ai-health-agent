@@ -971,30 +971,6 @@ def show_emergency_alert(language):
             """
         )
 
-# -----------------------------------------------------
-# CALL BUTTONS
-# -----------------------------------------------------
-
-st.markdown("### 📞 Emergency Calls")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.button(
-        "📞 Call 112",
-        key="call_112_button",
-        use_container_width=True,
-    )
-
-with col2:
-    st.button(
-        "🚑 Call 108",
-        key="call_108_button",
-        use_container_width=True,
-    )
-
-st.warning("🏥 Go to the nearest appropriate hospital immediately.")
-st.error("⚠️ Do not wait for Saathi's AI response.")
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
 # =========================================================
