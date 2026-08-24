@@ -851,10 +851,51 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show a highly visible emergency action panel."""
+    """Show emergency information only when a red flag is detected."""
 
     st.error("🚨 EMERGENCY")
 
+    if language == "Tamil":
+        st.markdown(
+            """
+            ## 🚨 அவசர நிலை
+
+            ### 📞 112 — அவசர உதவி
+            ### 🚑 108 — ஆம்புலன்ஸ்
+
+            ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
+
+            ### ⚠️ காத்திருக்க வேண்டாம்
+            """
+        )
+
+    elif language == "Hindi":
+        st.markdown(
+            """
+            ## 🚨 आपातकाल
+
+            ### 📞 112 — आपातकालीन सहायता
+            ### 🚑 108 — एम्बुलेंस
+
+            ### 🏥 निकटतम अस्पताल जाएं
+
+            ### ⚠️ इंतज़ार न करें
+            """
+        )
+
+    else:
+        st.markdown(
+            """
+            ## 🚨 EMERGENCY
+
+            ### 📞 112 — Emergency Help
+            ### 🚑 108 — Ambulance
+
+            ### 🏥 Go to the nearest hospital
+
+            ### ⚠️ DO NOT WAIT
+            """
+        )
     # -----------------------------------------------------
     # EMERGENCY MESSAGE
     # -----------------------------------------------------
@@ -1144,7 +1185,7 @@ Language context: {language}
             f"📝 Question received:\n\n{final_question}"
         )
 
-              # -------------------------------------------------
+        # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
         # -------------------------------------------------
 
@@ -1221,9 +1262,6 @@ Language context: {language}
 
             st.stop()
 
-        # -------------------------------------------------
-        # GEMINI PROMPT
-        # -------------------------------------------------
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
