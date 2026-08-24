@@ -1144,8 +1144,7 @@ Language context: {language}
         # -------------------------------------------------
 
         if detected_flags:
-
-            show_emergency_alert(language)
+           show_emergency_alert(language)
 
             st.markdown(
                 f"### {RED_FLAG_TITLE[language]}"
