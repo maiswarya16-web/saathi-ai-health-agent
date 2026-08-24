@@ -972,68 +972,30 @@ def show_emergency_alert(language):
         )
 
     # -----------------------------------------------------
-    # CALL BUTTONS
-    # -----------------------------------------------------
+# CALL BUTTONS
+# -----------------------------------------------------
 
-    st.markdown("### 📞 Emergency Calls")
+st.markdown("### 📞 Emergency Calls")
 
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-    with col1:
-        st.markdown(
-            """
-            <a href="tel:112" target="_self">
-                <button style="
-                    width:100%;
-                    padding:14px;
-                    background:#d32f2f;
-                    color:white;
-                    border:none;
-                    border-radius:10px;
-                    font-size:18px;
-                    font-weight:bold;
-                    cursor:pointer;
-                ">
-                    📞 Call 112
-                </button>
-            </a>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    with col2:
-        st.markdown(
-            """
-            <a href="tel:108" target="_self">
-                <button style="
-                    width:100%;
-                    padding:14px;
-                    background:#1976d2;
-                    color:white;
-                    border:none;
-                    border-radius:10px;
-                    font-size:18px;
-                    font-weight:bold;
-                    cursor:pointer;
-                ">
-                    🚑 Call 108
-                </button>
-            </a>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    # -----------------------------------------------------
-    # FINAL WARNING
-    # -----------------------------------------------------
-
-    st.warning(
-        "🏥 Go to the nearest appropriate hospital immediately."
+with col1:
+    st.button(
+        "📞 Call 112",
+        key="call_112_button",
+        use_container_width=True,
     )
 
-    st.error(
-        "⚠️ Do not wait for Saathi's AI response."
+with col2:
+    st.button(
+        "🚑 Call 108",
+        key="call_108_button",
+        use_container_width=True,
     )
+
+st.warning("🏥 Go to the nearest appropriate hospital immediately.")
+
+st.error("⚠️ Do not wait for Saathi's AI response.")
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
 # =========================================================
