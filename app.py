@@ -1048,7 +1048,7 @@ def detect_red_flags(text):
 
 def get_risk_priority(detected_flags, question):
     """
-    Determine the local risk priority before Gemini.
+    Determine local risk priority before Gemini.
     Emergency flags always have the highest priority.
     """
 
@@ -1056,6 +1056,10 @@ def get_risk_priority(detected_flags, question):
         return "EMERGENCY"
 
     text = normalize_text(question)
+
+    # -------------------------------------------------
+    # CLEAR HIGH-RISK PATTERNS
+    # -------------------------------------------------
 
     high_risk_patterns = [
         "pregnancy",
@@ -1077,6 +1081,10 @@ def get_risk_priority(detected_flags, question):
         "severe weakness",
     ]
 
+    # -------------------------------------------------
+    # MODERATE-RISK PATTERNS
+    # -------------------------------------------------
+
     moderate_risk_patterns = [
         "fever",
         "cough",
@@ -1092,14 +1100,32 @@ def get_risk_priority(detected_flags, question):
         "weakness",
     ]
 
+    # -------------------------------------------------
+    # COMMON MILD SYMPTOMS
+    # -------------------------------------------------
+
+    low_risk_patterns = [
+        "mild headache",
+        "slight headache",
+        "minor headache",
+        "small headache",
+        "mild pain",
+        "slight pain",
+    ]
+
+    # Check LOW first for clearly mild symptoms
+    if any(pattern in text for pattern in low_risk_patterns):
+        return "LOW"
+
+    # Then check HIGH
     if any(pattern in text for pattern in high_risk_patterns):
         return "HIGH"
 
+    # Then check MODERATE
     if any(pattern in text for pattern in moderate_risk_patterns):
         return "MODERATE"
 
     return "LOW"
-
 # =========================================================
 # RED FLAG UI
 # =========================================================
@@ -1471,6 +1497,12 @@ Health question:
 
 Local safety screen:
 No local emergency red-flag keyword was detected.
+
+Local Saathi risk priority:
+{risk_priority}
+
+Risk instruction:
+{risk_instruction}
 
 =========================================================
 IMPORTANT RESPONSE RULES
