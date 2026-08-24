@@ -3,7 +3,7 @@ import difflib
 import streamlit as st
 from google import genai
 
-# =========================================================f
+# =========================================================
 # PAGE CONFIGURATION
 # =========================================================
 
@@ -851,7 +851,7 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show emergency information and clickable call buttons."""
+    """Show emergency information and call buttons only when an emergency is detected."""
 
     st.error("🚨 EMERGENCY")
 
@@ -865,7 +865,6 @@ def show_emergency_alert(language):
             ## 🚨 அவசர நிலை
 
             ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
-
             ### ⚠️ காத்திருக்க வேண்டாம்
             """
         )
@@ -876,7 +875,6 @@ def show_emergency_alert(language):
             ## 🚨 आपातकाल
 
             ### 🏥 निकटतम अस्पताल जाएं
-
             ### ⚠️ इंतज़ार न करें
             """
         )
@@ -887,7 +885,6 @@ def show_emergency_alert(language):
             ## 🚨 అత్యవసర పరిస్థితి
 
             ### 🏥 సమీప ఆసుపత్రికి వెళ్లండి
-
             ### ⚠️ ఆలస్యం చేయవద్దు
             """
         )
@@ -898,7 +895,6 @@ def show_emergency_alert(language):
             ## 🚨 അടിയന്തര സാഹചര്യം
 
             ### 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
-
             ### ⚠️ കാത്തിരിക്കരുത്
             """
         )
@@ -909,7 +905,6 @@ def show_emergency_alert(language):
             ## 🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ
 
             ### 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
-
             ### ⚠️ ಕಾಯಬೇಡಿ
             """
         )
@@ -920,7 +915,6 @@ def show_emergency_alert(language):
             ## 🚨 জরুরি পরিস্থিতি
 
             ### 🏥 নিকটস্থ হাসপাতালে যান
-
             ### ⚠️ অপেক্ষা করবেন না
             """
         )
@@ -931,7 +925,6 @@ def show_emergency_alert(language):
             ## 🚨 आपत्कालीन परिस्थिती
 
             ### 🏥 जवळच्या रुग्णालयात जा
-
             ### ⚠️ विलंब करू नका
             """
         )
@@ -941,59 +934,43 @@ def show_emergency_alert(language):
             """
             ## 🚨 EMERGENCY
 
-            ### 🏥 Go to the nearest hospital
-
+            ### 🏥 GO TO THE NEAREST HOSPITAL
             ### ⚠️ DO NOT WAIT
             """
         )
 
     # -----------------------------------------------------
     # CALL BUTTONS
+    # These buttons are rendered ONLY when this function is called.
+    # This function is called only inside: if detected_flags:
     # -----------------------------------------------------
 
     st.markdown(
         """
-        <div style="
-            display:flex;
-            gap:10px;
-            margin-top:15px;
-            margin-bottom:15px;
-        ">
+        <div style="display:flex; gap:10px; margin:15px 0;">
 
             <a href="tel:112"
-               style="
-               flex:1;
-               text-align:center;
-               padding:14px;
-               background:#d32f2f;
-               color:white;
-               text-decoration:none;
-               border-radius:10px;
-               font-weight:bold;
-               font-size:18px;
+               style="flex:1; text-align:center; padding:14px;
+               background:#d32f2f; color:white; text-decoration:none;
+               border-radius:10px; font-weight:bold; font-size:18px;
                display:block;">
                📞 Call 112
             </a>
 
             <a href="tel:108"
-               style="
-               flex:1;
-               text-align:center;
-               padding:14px;
-               background:#1976d2;
-               color:white;
-               text-decoration:none;
-               border-radius:10px;
-               font-weight:bold;
-               font-size:18px;
+               style="flex:1; text-align:center; padding:14px;
+               background:#1976d2; color:white; text-decoration:none;
+               border-radius:10px; font-weight:bold; font-size:18px;
                display:block;">
                🚑 Call 108
             </a>
 
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
+
+
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
 # =========================================================
@@ -1167,7 +1144,7 @@ Language context: {language}
             f"📝 Question received:\n\n{final_question}"
         )
 
-        # -------------------------------------------------
+              # -------------------------------------------------
         # LOCAL RED-FLAG CHECK
         # -------------------------------------------------
 
@@ -1244,6 +1221,9 @@ Language context: {language}
 
             st.stop()
 
+        # -------------------------------------------------
+        # GEMINI PROMPT
+        # -------------------------------------------------
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
