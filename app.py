@@ -851,51 +851,10 @@ RED_FLAG_MESSAGE = {
 # =========================================================
 
 def show_emergency_alert(language):
-    """Show emergency information only when a red flag is detected."""
+    """Show emergency information and clickable call buttons."""
 
     st.error("🚨 EMERGENCY")
 
-    if language == "Tamil":
-        st.markdown(
-            """
-            ## 🚨 அவசர நிலை
-
-            ### 📞 112 — அவசர உதவி
-            ### 🚑 108 — ஆம்புலன்ஸ்
-
-            ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
-
-            ### ⚠️ காத்திருக்க வேண்டாம்
-            """
-        )
-
-    elif language == "Hindi":
-        st.markdown(
-            """
-            ## 🚨 आपातकाल
-
-            ### 📞 112 — आपातकालीन सहायता
-            ### 🚑 108 — एम्बुलेंस
-
-            ### 🏥 निकटतम अस्पताल जाएं
-
-            ### ⚠️ इंतज़ार न करें
-            """
-        )
-
-    else:
-        st.markdown(
-            """
-            ## 🚨 EMERGENCY
-
-            ### 📞 112 — Emergency Help
-            ### 🚑 108 — Ambulance
-
-            ### 🏥 Go to the nearest hospital
-
-            ### ⚠️ DO NOT WAIT
-            """
-        )
     # -----------------------------------------------------
     # EMERGENCY MESSAGE
     # -----------------------------------------------------
@@ -905,9 +864,6 @@ def show_emergency_alert(language):
             """
             ## 🚨 அவசர நிலை
 
-            ### 📞 112 — அவசர உதவி
-            ### 🚑 108 — ஆம்புலன்ஸ்
-
             ### 🏥 அருகிலுள்ள மருத்துவமனைக்குச் செல்லுங்கள்
 
             ### ⚠️ காத்திருக்க வேண்டாம்
@@ -918,9 +874,6 @@ def show_emergency_alert(language):
         st.markdown(
             """
             ## 🚨 आपातकाल
-
-            ### 📞 112 — आपातकालीन सहायता
-            ### 🚑 108 — एम्बुलेंस
 
             ### 🏥 निकटतम अस्पताल जाएं
 
@@ -933,9 +886,6 @@ def show_emergency_alert(language):
             """
             ## 🚨 అత్యవసర పరిస్థితి
 
-            ### 📞 112 — అత్యవసర సహాయం
-            ### 🚑 108 — అంబులెన్స్
-
             ### 🏥 సమీప ఆసుపత్రికి వెళ్లండి
 
             ### ⚠️ ఆలస్యం చేయవద్దు
@@ -946,9 +896,6 @@ def show_emergency_alert(language):
         st.markdown(
             """
             ## 🚨 അടിയന്തര സാഹചര്യം
-
-            ### 📞 112 — അടിയന്തര സഹായം
-            ### 🚑 108 — ആംബുലൻസ്
 
             ### 🏥 അടുത്തുള്ള ആശുപത്രിയിലേക്ക് പോകുക
 
@@ -961,9 +908,6 @@ def show_emergency_alert(language):
             """
             ## 🚨 ತುರ್ತು ಪರಿಸ್ಥಿತಿ
 
-            ### 📞 112 — ತುರ್ತು ಸಹಾಯ
-            ### 🚑 108 — ಆಂಬ್ಯುಲೆನ್ಸ್
-
             ### 🏥 ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗೆ ಹೋಗಿ
 
             ### ⚠️ ಕಾಯಬೇಡಿ
@@ -974,9 +918,6 @@ def show_emergency_alert(language):
         st.markdown(
             """
             ## 🚨 জরুরি পরিস্থিতি
-
-            ### 📞 112 — জরুরি সহায়তা
-            ### 🚑 108 — অ্যাম্বুলেন্স
 
             ### 🏥 নিকটস্থ হাসপাতালে যান
 
@@ -989,9 +930,6 @@ def show_emergency_alert(language):
             """
             ## 🚨 आपत्कालीन परिस्थिती
 
-            ### 📞 112 — आपत्कालीन मदत
-            ### 🚑 108 — रुग्णवाहिका
-
             ### 🏥 जवळच्या रुग्णालयात जा
 
             ### ⚠️ विलंब करू नका
@@ -1003,15 +941,59 @@ def show_emergency_alert(language):
             """
             ## 🚨 EMERGENCY
 
-            ### 📞 112 — Emergency
-            ### 🚑 108 — Ambulance
-
             ### 🏥 Go to the nearest hospital
 
             ### ⚠️ DO NOT WAIT
             """
         )
 
+    # -----------------------------------------------------
+    # CALL BUTTONS
+    # -----------------------------------------------------
+
+    st.markdown(
+        """
+        <div style="
+            display:flex;
+            gap:10px;
+            margin-top:15px;
+            margin-bottom:15px;
+        ">
+
+            <a href="tel:112"
+               style="
+               flex:1;
+               text-align:center;
+               padding:14px;
+               background:#d32f2f;
+               color:white;
+               text-decoration:none;
+               border-radius:10px;
+               font-weight:bold;
+               font-size:18px;
+               display:block;">
+               📞 Call 112
+            </a>
+
+            <a href="tel:108"
+               style="
+               flex:1;
+               text-align:center;
+               padding:14px;
+               background:#1976d2;
+               color:white;
+               text-decoration:none;
+               border-radius:10px;
+               font-weight:bold;
+               font-size:18px;
+               display:block;">
+               🚑 Call 108
+            </a>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
 # =========================================================
