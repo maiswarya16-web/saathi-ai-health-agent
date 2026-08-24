@@ -1041,7 +1041,65 @@ def detect_red_flags(text):
             seen_categories.add(item[0])
 
     return unique_detected
+    
+# =========================================================
+# RISK PRIORITY
+# =========================================================
 
+def get_risk_priority(detected_flags, question):
+    """
+    Determine the local risk priority before Gemini.
+    Emergency flags always have the highest priority.
+    """
+
+    if detected_flags:
+        return "EMERGENCY"
+
+    text = normalize_text(question)
+
+    high_risk_patterns = [
+        "pregnancy",
+        "pregnant",
+        "newborn",
+        "baby",
+        "infant",
+        "severe pain",
+        "persistent vomiting",
+        "very high fever",
+        "blood pressure very high",
+        "very high bp",
+        "blood sugar very high",
+        "blood sugar very low",
+        "difficulty eating",
+        "difficulty drinking",
+        "dehydration",
+        "repeated vomiting",
+        "severe weakness",
+    ]
+
+    moderate_risk_patterns = [
+        "fever",
+        "cough",
+        "vomiting",
+        "diarrhea",
+        "headache",
+        "dizziness",
+        "abdominal pain",
+        "stomach pain",
+        "back pain",
+        "rash",
+        "swelling",
+        "persistent pain",
+        "weakness",
+    ]
+
+    if any(pattern in text for pattern in high_risk_patterns):
+        return "HIGH"
+
+    if any(pattern in text for pattern in moderate_risk_patterns):
+        return "MODERATE"
+
+    return "LOW"
 
 # =========================================================
 # RED FLAG UI
@@ -1250,6 +1308,11 @@ Language context: {language}
 
         detected_flags = detect_red_flags(final_question)
         first_aid_type = detect_first_aid(final_question)
+
+        risk_priority = get_risk_priority(
+            detected_flags,
+            final_question
+        )
 
         # -------------------------------------------------
         # FIRST-AID GUIDE
