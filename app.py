@@ -1082,7 +1082,6 @@ def get_risk_priority(detected_flags, question):
         "cough",
         "vomiting",
         "diarrhea",
-        "headache",
         "dizziness",
         "abdominal pain",
         "stomach pain",
