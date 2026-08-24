@@ -1182,7 +1182,7 @@ Language context: {language}
 
         st.markdown("### 🚨 Warning signs detected")
 
-            for category, matches in detected_flags:
+        for category, matches in detected_flags:
                 st.markdown(
                     f"**{category}** — {', '.join(matches)}"
                 )
