@@ -1150,7 +1150,7 @@ Language context: {language}
                 f"### {RED_FLAG_TITLE[language]}"
             )
 
-            st.warning(
+        st.warning(
                 f"🚨 {RED_FLAG_MESSAGE[language]}"
             )
 
