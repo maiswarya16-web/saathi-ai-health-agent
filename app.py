@@ -903,51 +903,24 @@ def show_emergency_alert(language):
     # CALL BUTTONS
     # -----------------------------------------------------
 
-    st.markdown(
-        """
-        <div style="
-            display:flex;
-            gap:10px;
-            margin-top:20px;
-            margin-bottom:20px;
-        ">
+    st.markdown("### 📞 Emergency Call")
 
-            <a href="tel:112"
-               style="
-                   flex:1;
-                   text-align:center;
-                   padding:15px 10px;
-                   background-color:#d32f2f;
-                   color:white;
-                   text-decoration:none;
-                   border-radius:10px;
-                   font-weight:bold;
-                   font-size:18px;
-                   display:block;
-               ">
-                📞 Call 112
-            </a>
+    col1, col2 = st.columns(2)
 
-            <a href="tel:108"
-               style="
-                   flex:1;
-                   text-align:center;
-                   padding:15px 10px;
-                   background-color:#1976d2;
-                   color:white;
-                   text-decoration:none;
-                   border-radius:10px;
-                   font-weight:bold;
-                   font-size:18px;
-                   display:block;
-               ">
-                🚑 Call 108
-            </a>
+    with col1:
+        st.link_button(
+            "📞 Call 112",
+            "tel:112",
+            use_container_width=True
+        )
 
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    with col2:
+        st.link_button(
+            "🚑 Call 108",
+            "tel:108",
+            use_container_width=True
+        )
+
 # =========================================================
 # ASK SAATHI
 # =========================================================
