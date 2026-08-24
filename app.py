@@ -895,6 +895,18 @@ def show_emergency_alert(language):
         st.write("112 — Emergency")
         st.write("108 — Ambulance")
 
+    else:
+         st.markdown(
+        """
+        # 📞 CALL 112
+        ## 🚑 OR LOCAL AMBULANCE / 108
+
+        # 🏥 GO TO THE NEAREST HOSPITAL
+
+        ## ⚠️ DO NOT WAIT
+        """
+    )
+
 # =========================================================
 # EMERGENCY CALL BUTTONS
 # =========================================================
