@@ -1156,7 +1156,7 @@ Language context: {language}
 
         st.markdown("### 🆘 What to do now")
 
-            if language == "Tamil":
+        if language == "Tamil":
                 st.write(
                     "• நபரை தனியாக விடாதீர்கள்.\n"
                     "• உடனடி மருத்துவ உதவியை பெறுங்கள்.\n"
