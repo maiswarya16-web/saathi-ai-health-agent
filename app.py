@@ -753,7 +753,11 @@ def detect_red_flags(text):
 
     normalized = normalize_text(text)
     detected = []
-        # -----------------------------------------------------
+    
+    detected.extend(
+        detect_multilingual_emergency_patterns(text)
+    )
+    # -----------------------------------------------------
     # SMART SEVERE BLEEDING DETECTION
     # -----------------------------------------------------
 
