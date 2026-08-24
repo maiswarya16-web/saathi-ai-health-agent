@@ -1041,17 +1041,17 @@ Language context: {language}
         if detected_flags:
            show_emergency_alert(language)
 
-        st.markdown(
+           st.markdown(
                 f"### {RED_FLAG_TITLE[language]}"
             )
 
-        st.warning(
+           st.warning(
                 f"🚨 {RED_FLAG_MESSAGE[language]}"
             )
 
-        st.markdown("### 🆘 What to do now")
+           st.markdown("### 🆘 What to do now")
 
-        if language == "Tamil":
+           if language == "Tamil":
                 st.write(
                     "• நபரை தனியாக விடாதீர்கள்.\n"
                     "• உடனடி மருத்துவ உதவியை பெறுங்கள்.\n"
@@ -1059,7 +1059,7 @@ Language context: {language}
                     "• அருகிலுள்ள மருத்துவமனைக்கு செல்லுங்கள்."
                 )
 
-        elif language == "Hindi":
+           elif language == "Hindi":
                 st.write(
                     "• व्यक्ति को अकेला न छोड़ें।\n"
                     "• तुरंत चिकित्सा सहायता लें।\n"
@@ -1067,7 +1067,7 @@ Language context: {language}
                     "• निकटतम अस्पताल जाएं।"
                 )
 
-        else:
+           else:
                 st.write(
                     "• Do not leave the person alone.\n"
                     "• Seek immediate medical help.\n"
@@ -1075,27 +1075,24 @@ Language context: {language}
                     "• Go to the nearest appropriate hospital."
                 )
 
-        st.markdown("### 🚨 Warning signs detected")
+           st.markdown("### 🚨 Warning signs detected")
 
-        for category, matches in detected_flags:
+           for category, matches in detected_flags:
                 st.markdown(
                     f"**{category}** — {', '.join(matches)}"
                 )
 
-        st.error(
+           st.error(
                 "⚠️ Do not wait for Saathi's AI response if the person "
                 "has a serious or life-threatening condition."
             )
 
-        st.info(
+           st.info(
                 "🛑 Emergency detected — normal AI guidance will be skipped."
             )
 
-        st.stop()
+           st.stop()
 
-        # -------------------------------------------------
-        # GEMINI PROMPT
-        # -------------------------------------------------
         # -------------------------------------------------
         # GEMINI PROMPT
         # -------------------------------------------------
