@@ -971,7 +971,7 @@ def show_emergency_alert(language):
             """
         )
 
-    # -----------------------------------------------------
+# -----------------------------------------------------
 # CALL BUTTONS
 # -----------------------------------------------------
 
@@ -994,7 +994,6 @@ with col2:
     )
 
 st.warning("🏥 Go to the nearest appropriate hospital immediately.")
-
 st.error("⚠️ Do not wait for Saathi's AI response.")
 # =========================================================
 # LOCAL FALLBACK GUIDANCE
