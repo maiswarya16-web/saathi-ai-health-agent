@@ -2242,6 +2242,8 @@ def get_risk_priority(detected_flags, question):
         "severe pain",
         "persistent vomiting",
         "very high fever",
+        "difficult to wake up",
+        "confused", 
         "blood pressure very high",
         "very high bp",
         "blood sugar very high",
