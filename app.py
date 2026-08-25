@@ -992,6 +992,8 @@ RED_FLAG_GROUPS = {
         "serious head injury",
         "head injury with loss of consciousness",
         "major trauma",
+        "badly burned",
+        "burn is deep", 
         "severe injury",
 
         "गंभीर जलना",
