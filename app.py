@@ -1805,13 +1805,262 @@ def show_first_aid_guide(language, first_aid_type):
 # =========================================================
 
 def detect_red_flags(text):
-
+    """
+    Detect genuine emergency red flags while avoiding
+    false positives from negative/normal statements.
+    """
     if not text:
         return []
 
     normalized = normalize_text(text)
 
+    # ---------------------------------------------------------
+    # NEGATIVE / REASSURING PHRASES
+    # These prevent phrases such as:
+    # "I can breathe normally"
+    # "no difficulty breathing"
+    # "I don't have chest pain"
+    # from being treated as emergencies.
+    # ---------------------------------------------------------
+    negative_phrases = [
+        "no difficulty breathing",
+        "no breathing difficulty",
+        "no shortness of breath",
+        "no chest pain",
+        "no severe chest pain",
+        "no bleeding",
+        "no severe bleeding",
+        "no heavy bleeding",
+        "no unconsciousness",
+        "not unconscious",
+        "not having a seizure",
+        "no seizure",
+        "no convulsion",
+        "no choking",
+        "not choking",
+        "can breathe normally",
+        "breathing normally",
+        "breathing is normal",
+        "breathing fine",
+        "breathing is fine",
+        "can speak normally",
+        "speaking normally",
+        "no severe pain",
+        "no severe abdominal pain",
+        "no severe headache",
+        "no sudden weakness",
+        "no sudden numbness",
+        "no stroke symptoms",
+        "no signs of stroke",
+    ]
+
+    # ---------------------------------------------------------
+    # Check whether a phrase is explicitly negated.
+    # ---------------------------------------------------------
+    def is_negated(keyword):
+        keyword = normalize_text(keyword)
+
+        # Direct negative phrase before the keyword
+        direct_negative_patterns = [
+            f"no {keyword}",
+            f"not {keyword}",
+            f"without {keyword}",
+            f"does not have {keyword}",
+            f"doesn't have {keyword}",
+            f"do not have {keyword}",
+            f"don't have {keyword}",
+            f"there is no {keyword}",
+            f"there are no {keyword}",
+        ]
+
+        for pattern in direct_negative_patterns:
+            if pattern in normalized:
+                return True
+
+        # Check a small word window before the keyword.
+        words = normalized.split()
+        keyword_words = keyword.split()
+
+        if len(words) >= len(keyword_words):
+            for i in range(len(words) - len(keyword_words) + 1):
+                window = words[i:i + len(keyword_words)]
+
+                if window == keyword_words:
+                    previous_words = words[max(0, i - 5):i]
+                    previous_text = " ".join(previous_words)
+
+                    if any(
+                        neg in previous_text
+                        for neg in [
+                            "no",
+                            "not",
+                            "without",
+                            "never",
+                            "don't",
+                            "doesn't",
+                            "do not",
+                            "does not",
+                        ]
+                    ):
+                        return True
+
+        return False
+
+    # ---------------------------------------------------------
+    # Special protection for normal breathing statements.
+    # ---------------------------------------------------------
+    normal_breathing = any(
+        phrase in normalized
+        for phrase in [
+            "can breathe normally",
+            "breathing normally",
+            "breathing is normal",
+            "breathing fine",
+            "breathing is fine",
+            "no difficulty breathing",
+            "no breathing difficulty",
+            "no shortness of breath",
+        ]
+    )
+
     detected = []
+
+    # ---------------------------------------------------------
+    # EXACT RED-FLAG MATCHING
+    # ---------------------------------------------------------
+    for category, keywords in RED_FLAG_GROUPS.items():
+
+        exact_matches = []
+
+        for keyword in keywords:
+            keyword_normalized = normalize_text(keyword)
+
+            if keyword_normalized in normalized:
+
+                # Do not trigger for explicitly negated statements.
+                if is_negated(keyword_normalized):
+                    continue
+
+                # Do not trigger breathing emergency when
+                # the person explicitly says breathing is normal.
+                if category == "Severe breathing emergency" and normal_breathing:
+                    continue
+
+                exact_matches.append(keyword)
+
+        if exact_matches:
+            detected.append(
+                (category, exact_matches[:3])
+            )
+
+    # ---------------------------------------------------------
+    # FUZZY MATCHING
+    # Only use fuzzy matching for English.
+    # Make it stricter to prevent false emergencies.
+    # ---------------------------------------------------------
+    english_words = re.findall(
+        r"[a-z]+(?:'[a-z]+)?",
+        normalized
+    )
+
+    english_text = " ".join(english_words)
+    collapsed_text = collapse_repeated_letters(english_text)
+    text_words = collapsed_text.split()
+
+    for phrase in FUZZY_RED_FLAGS:
+
+        phrase = normalize_text(phrase)
+
+        # Skip fuzzy detection when the exact phrase is
+        # explicitly negated.
+        if is_negated(phrase):
+            continue
+
+        # Normal breathing statements must never fuzzy-match
+        # a severe breathing emergency.
+        if (
+            phrase in [
+                "cannot breathe",
+                "severe difficulty breathing",
+                "difficulty breathing",
+            ]
+            and normal_breathing
+        ):
+            continue
+
+        collapsed_phrase = collapse_repeated_letters(phrase)
+        phrase_words = collapsed_phrase.split()
+
+        if not phrase_words:
+            continue
+
+        best_ratio = 0.0
+
+        # -----------------------------------------------------
+        # Fuzzy matching requires the same number of words.
+        # This prevents unrelated short sentences from
+        # accidentally matching emergency phrases.
+        # -----------------------------------------------------
+        n = len(phrase_words)
+
+        if len(text_words) >= n:
+
+            for i in range(len(text_words) - n + 1):
+
+                window = " ".join(
+                    text_words[i:i + n]
+                )
+
+                ratio = difflib.SequenceMatcher(
+                    None,
+                    window,
+                    collapsed_phrase,
+                ).ratio()
+
+                best_ratio = max(
+                    best_ratio,
+                    ratio
+                )
+
+        # Stricter threshold than the previous 0.86.
+        if best_ratio >= 0.92:
+
+            for category, keywords in RED_FLAG_GROUPS.items():
+
+                normalized_keywords = [
+                    normalize_text(k)
+                    for k in keywords
+                ]
+
+                if phrase in normalized_keywords:
+
+                    # Breathing protection
+                    if (
+                        category == "Severe breathing emergency"
+                        and normal_breathing
+                    ):
+                        continue
+
+                    existing = next(
+                        (
+                            item
+                            for item in detected
+                            if item[0] == category
+                        ),
+                        None,
+                    )
+
+                    if existing is None:
+                        detected.append(
+                            (
+                                category,
+                                [f"possible match: {phrase}"]
+                            )
+                        )
+
+                    break
+
+    return detected
 
     # -----------------------------------------------------
     # MULTILINGUAL COMBINATION PATTERNS
