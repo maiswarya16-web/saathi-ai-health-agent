@@ -1033,7 +1033,7 @@ RED_FLAG_GROUPS = {
         "seizure during pregnancy",
         "pregnancy seizure",
         "baby not moving",
-        "difficult to wake up”,
+        "difficult to wake up",
         "baby movement stopped",
         "child is unable to drink",
         "newborn not breathing",
