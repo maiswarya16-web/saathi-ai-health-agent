@@ -14,6 +14,44 @@ def get_db_connection():
         "saathi_patients.db",
         check_same_thread=False
     )
+    
+# =========================================================
+# CREATE PATIENT DATABASE TABLES
+# =========================================================
+
+def create_patient_database():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS patients (
+            patient_id TEXT PRIMARY KEY,
+            patient_name TEXT NOT NULL,
+            age INTEGER,
+            gender TEXT,
+            village TEXT,
+            created_at TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS visits (
+            visit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_id TEXT,
+            visit_date TEXT,
+            complaint TEXT,
+            temperature TEXT,
+            blood_pressure TEXT,
+            blood_sugar TEXT,
+            weight TEXT,
+            risk_level TEXT,
+            notes TEXT
+        )
+    """)
+
+    conn.commit()
+    conn.close()
 
 # =========================================================
 # PAGE CONFIGURATION
