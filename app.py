@@ -6,6 +6,16 @@ import sqlite3
 from datetime import datetime
 
 # =========================================================
+# PATIENT DATABASE CONNECTION
+# =========================================================
+
+def get_db_connection():
+    return sqlite3.connect(
+        "saathi_patients.db",
+        check_same_thread=False
+    )
+
+# =========================================================
 # PAGE CONFIGURATION
 # =========================================================
 
