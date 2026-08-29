@@ -55,6 +55,61 @@ def create_patient_database():
     create_patient_database()
 
 # =========================================================
+# ADD NEW PATIENT
+# =========================================================
+
+def add_new_patient(
+    patient_id,
+    patient_name,
+    age,
+    gender,
+    village
+):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute(
+            """
+            INSERT INTO patients (
+                patient_id,
+                patient_name,
+                age,
+                gender,
+                village,
+                created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                patient_id,
+                patient_name,
+                age,
+                gender,
+                village,
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+            ),
+        )
+
+        conn.commit()
+        return True, "Patient added successfully."
+
+    except sqlite3.IntegrityError:
+
+        return (
+            False,
+            "This Patient ID already exists."
+        )
+
+    finally:
+
+        conn.close()
+
+# =========================================================
 # PAGE CONFIGURATION
 # =========================================================
 
