@@ -52,6 +52,7 @@ def create_patient_database():
 
     conn.commit()
     conn.close()
+    create_patient_database()
 
 # =========================================================
 # PAGE CONFIGURATION
