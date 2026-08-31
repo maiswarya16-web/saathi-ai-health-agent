@@ -33,7 +33,7 @@ def create_patient_database():
         village TEXT,
         created_at TEXT
     )
-""")
+    """)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS visits (
@@ -52,8 +52,9 @@ def create_patient_database():
 
     conn.commit()
     conn.close()
-    create_patient_database()
 
+
+create_patient_database()
 # =========================================================
 # ADD NEW PATIENT
 # =========================================================
