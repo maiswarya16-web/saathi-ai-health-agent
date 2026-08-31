@@ -14,6 +14,32 @@ def get_db_connection():
         "saathi_patients.db",
         check_same_thread=False
     )
+
+def get_patient_by_id(patient_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            patient_id,
+            patient_name,
+            age,
+            gender,
+            village,
+            created_at
+        FROM patients
+        WHERE patient_id = ?
+        """,
+        (patient_id,),
+    )
+
+    patient = cursor.fetchone()
+
+    conn.close()
+
+    return patient
     
 # =========================================================
 # CREATE PATIENT DATABASE TABLES
