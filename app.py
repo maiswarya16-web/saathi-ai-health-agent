@@ -25,15 +25,15 @@ def create_patient_database():
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS patients (
-            patient_id TEXT PRIMARY KEY,
-            patient_name TEXT NOT NULL,
-            age INTEGER,
-            gender TEXT,
-            village TEXT,
-            created_at TEXT
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS patients (
+        patient_id TEXT PRIMARY KEY,
+        patient_name TEXT NOT NULL,
+        age INTEGER,
+        gender TEXT,
+        village TEXT,
+        created_at TEXT
+    )
+""")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS visits (
