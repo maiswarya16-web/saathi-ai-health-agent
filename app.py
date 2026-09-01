@@ -636,18 +636,18 @@ with st.expander("➕ Add New Patient", expanded=False):
 
 
 # =========================================================
-# PATIENT INFORMATION
+# CONSULTATION DETAILS
 # =========================================================
 
-st.subheader("👤 Patient Information")
+st.subheader("👤 Consultation Details")
 
 patient_id = st.text_input(
-    "Patient ID",
+    "Patient ID for this consultation",
     placeholder="Example: P001",
 )
 
 patient_age = st.number_input(
-    "Age",
+    "Patient Age",
     min_value=0,
     max_value=120,
     value=0,
@@ -655,7 +655,7 @@ patient_age = st.number_input(
 )
 
 patient_gender = st.selectbox(
-    "Gender",
+    "Patient Gender",
     [
         "Not specified",
         "Female",
