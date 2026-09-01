@@ -562,6 +562,78 @@ topic_index = TOPICS[language].index(selected_topic_display)
 
 topic = TOPIC_KEYS[topic_index]
 
+# =========================================================
+# PATIENT REGISTRATION
+# =========================================================
+
+st.markdown("## 👤 Patient Records")
+
+with st.expander("➕ Add New Patient", expanded=False):
+
+    new_patient_id = st.text_input(
+        "Patient ID",
+        key="new_patient_id"
+    )
+
+    new_patient_name = st.text_input(
+        "Patient Name",
+        key="new_patient_name"
+    )
+
+    new_patient_age = st.number_input(
+        "Age",
+        min_value=0,
+        max_value=120,
+        value=0,
+        key="new_patient_age"
+    )
+
+    new_patient_gender = st.selectbox(
+        "Gender",
+        ["Select", "Female", "Male", "Other"],
+        key="new_patient_gender"
+    )
+
+    new_patient_village = st.text_input(
+        "Village / Area",
+        key="new_patient_village"
+    )
+
+    if st.button(
+        "💾 Save Patient",
+        key="save_new_patient"
+    ):
+
+        if (
+            not new_patient_id.strip()
+            or not new_patient_name.strip()
+        ):
+
+            st.warning(
+                "Please enter Patient ID and Patient Name."
+            )
+
+        else:
+
+            success, message = add_new_patient(
+                new_patient_id.strip(),
+                new_patient_name.strip(),
+                new_patient_age,
+                new_patient_gender,
+                new_patient_village.strip(),
+            )
+
+            if success:
+
+                st.success(
+                    "✅ Patient saved successfully!"
+                )
+
+            else:
+
+                st.error(message)
+
+
 
 # =========================================================
 # PATIENT INFORMATION
@@ -2980,76 +3052,6 @@ def show_emergency_alert(language):
                 "🚑 Please call 108 from your phone."
             )
 
-# =========================================================
-# PATIENT REGISTRATION
-# =========================================================
-
-st.markdown("## 👤 Patient Records")
-
-with st.expander("➕ Add New Patient", expanded=False):
-
-    new_patient_id = st.text_input(
-        "Patient ID",
-        key="new_patient_id"
-    )
-
-    new_patient_name = st.text_input(
-        "Patient Name",
-        key="new_patient_name"
-    )
-
-    new_patient_age = st.number_input(
-        "Age",
-        min_value=0,
-        max_value=120,
-        value=0,
-        key="new_patient_age"
-    )
-
-    new_patient_gender = st.selectbox(
-        "Gender",
-        ["Select", "Female", "Male", "Other"],
-        key="new_patient_gender"
-    )
-
-    new_patient_village = st.text_input(
-        "Village / Area",
-        key="new_patient_village"
-    )
-
-    if st.button(
-        "💾 Save Patient",
-        key="save_new_patient"
-    ):
-
-        if (
-            not new_patient_id.strip()
-            or not new_patient_name.strip()
-        ):
-
-            st.warning(
-                "Please enter Patient ID and Patient Name."
-            )
-
-        else:
-
-            success, message = add_new_patient(
-                new_patient_id.strip(),
-                new_patient_name.strip(),
-                new_patient_age,
-                new_patient_gender,
-                new_patient_village.strip(),
-            )
-
-            if success:
-
-                st.success(
-                    "✅ Patient saved successfully!"
-                )
-
-            else:
-
-                st.error(message)
 
 
 # =========================================================
