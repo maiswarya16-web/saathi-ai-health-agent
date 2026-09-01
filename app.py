@@ -721,51 +721,70 @@ if "selected_patient" in st.session_state:
 # CONSULTATION DETAILS
 # =========================================================
 
-st.subheader("👤 Consultation Details")
+st.subheader("🩺 Consultation Details")
 
-patient_id = st.text_input(
-    "Patient ID for this consultation",
-    placeholder="Example: P001",
-)
+# ---------------------------------------------------------
+# USE SELECTED PATIENT DETAILS
+# ---------------------------------------------------------
 
-patient_age = st.number_input(
-    "Patient Age",
-    min_value=0,
-    max_value=120,
-    value=0,
-    step=1,
-)
+if "selected_patient" in st.session_state:
 
-patient_gender = st.selectbox(
-    "Patient Gender",
-    [
-        "Not specified",
-        "Female",
-        "Male",
-        "Other",
-    ],
-)
+    selected_patient = st.session_state.selected_patient
+
+    patient_id = selected_patient["patient_id"]
+    patient_age = selected_patient["age"]
+    patient_gender = selected_patient["gender"]
+
+    st.success("👤 Using selected patient details")
+
+    st.write(f"**Patient ID:** {patient_id}")
+    st.write(f"**Name:** {selected_patient['patient_name']}")
+    st.write(f"**Age:** {patient_age}")
+    st.write(f"**Gender:** {patient_gender}")
+    st.write(f"**Village / Area:** {selected_patient['village']}")
+
+else:
+
+    st.info(
+        "Select an existing patient or add a new patient."
+    )
+
+    patient_id = st.text_input(
+        "Patient ID",
+        placeholder="Example: P001"
+    )
+
+    patient_age = st.number_input(
+        "Patient Age",
+        min_value=0,
+        max_value=120,
+        value=0,
+        step=1
+    )
+
+    patient_gender = st.selectbox(
+        "Patient Gender",
+        [
+            "Not specified",
+            "Female",
+            "Male",
+            "Other",
+        ]
+    )
+
+
+# ---------------------------------------------------------
+# CONSULTATION NOTES
+# ---------------------------------------------------------
 
 patient_notes = st.text_area(
     "Relevant Patient Notes",
     placeholder=(
-        "Example: History of diabetes, hypertension, pregnancy, etc."
+        "Example: History of diabetes, hypertension, "
+        "pregnancy, etc."
     ),
-    height=100,
+    height=100
 )
-
-
-# =========================================================
-# TEXT QUESTION
-# =========================================================
-
-question = st.text_area(
-    ui["question"],
-    placeholder=ui["placeholder"],
-    height=120,
-)
-
-
 # =========================================================
 # VOICE INPUT
 # =========================================================
