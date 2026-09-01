@@ -633,6 +633,88 @@ with st.expander("➕ Add New Patient", expanded=False):
 
                 st.error(message)
 
+# =========================================================
+# SEARCH EXISTING PATIENT
+# =========================================================
+
+with st.expander("🔍 Search Existing Patient", expanded=False):
+
+    search_patient_id = st.text_input(
+        "Enter Patient ID",
+        placeholder="Example: P001",
+        key="search_patient_id"
+    )
+
+    if st.button(
+        "🔍 Search Patient",
+        key="search_existing_patient"
+    ):
+
+        if not search_patient_id.strip():
+
+            st.warning(
+                "Please enter a Patient ID."
+            )
+
+        else:
+
+            patient = get_patient_by_id(
+                search_patient_id.strip()
+            )
+
+            if patient:
+
+                st.session_state.selected_patient = {
+                    "patient_id": patient[0],
+                    "patient_name": patient[1],
+                    "age": patient[2],
+                    "gender": patient[3],
+                    "village": patient[4],
+                }
+
+                st.success(
+                    "✅ Patient found successfully!"
+                )
+
+            else:
+
+                st.error(
+                    "❌ No patient found with this Patient ID."
+                )
+
+
+if "selected_patient" in st.session_state:
+
+    selected_patient = (
+        st.session_state.selected_patient
+    )
+
+    st.markdown("### 👤 Selected Patient")
+
+    st.write(
+        f"**Patient ID:** "
+        f"{selected_patient['patient_id']}"
+    )
+
+    st.write(
+        f"**Name:** "
+        f"{selected_patient['patient_name']}"
+    )
+
+    st.write(
+        f"**Age:** "
+        f"{selected_patient['age']}"
+    )
+
+    st.write(
+        f"**Gender:** "
+        f"{selected_patient['gender']}"
+    )
+
+    st.write(
+        f"**Village / Area:** "
+        f"{selected_patient['village']}"
+    )
 
 
 # =========================================================
