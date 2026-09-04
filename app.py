@@ -572,7 +572,15 @@ with col2:
         "🔍 Search Existing Patient",
         use_container_width=True
     )
+    
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "consultation"
 
+if add_patient_clicked:
+    st.session_state.current_page = "add_patient"
+
+if search_patient_clicked:
+    st.session_state.current_page = "search_patient"
 with st.expander("➕ Add New Patient", expanded=False):
 
     new_patient_id = st.text_input(
