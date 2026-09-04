@@ -191,10 +191,6 @@ st.markdown("""
         🩺 Saathi AI
     </div>
 
-    <div class="saathi-subtitle">
-        AI Health Assistant for Frontline Health Workers
-    </div>
-</div>
 """, unsafe_allow_html=True)
 
 # =========================================================
