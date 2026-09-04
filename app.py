@@ -578,9 +578,13 @@ if "current_page" not in st.session_state:
 
 if add_patient_clicked:
     st.session_state.current_page = "add_patient"
+    st.rerun()
+
 
 if search_patient_clicked:
     st.session_state.current_page = "search_patient"
+    st.rerun()
+
 if st.session_state.current_page == "add_patient":
 
     st.markdown("## ➕ Add New Patient")
