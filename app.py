@@ -145,14 +145,6 @@ st.set_page_config(
     page_icon="🩺",
     layout="centered",
 )
-st.warning("TEST: New UI code is running")
-st.markdown("""
-<style>
-[data-testid="stAppViewContainer"] {
-    background-color: #f0f7f6 !important;
-}
-</style>
-""", unsafe_allow_html=True)
 st.title("🩺 Saathi AI")
 st.caption("AI Health Assistant for Frontline Health Workers")
 
