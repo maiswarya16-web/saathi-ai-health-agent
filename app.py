@@ -145,6 +145,7 @@ st.set_page_config(
     page_icon="🩺",
     layout="centered",
 )
+st.warning("TEST: New UI code is running")
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
