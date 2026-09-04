@@ -145,6 +145,8 @@ st.set_page_config(
     page_icon="🩺",
     layout="centered",
 )
+st.title("🩺 Saathi AI")
+st.caption("AI Health Assistant for Frontline Health Workers")
 
 # =========================================================
 # SAATHI MODERN UI STYLE
