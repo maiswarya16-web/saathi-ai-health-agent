@@ -581,71 +581,16 @@ if add_patient_clicked:
 
 if search_patient_clicked:
     st.session_state.current_page = "search_patient"
-with st.expander("➕ Add New Patient", expanded=False):
+if st.session_state.current_page == "add_patient":
 
-    new_patient_id = st.text_input(
-        "Patient ID",
-        key="new_patient_id"
-    )
+    st.markdown("## ➕ Add New Patient")
 
-    new_patient_name = st.text_input(
-        "Patient Name",
-        key="new_patient_name"
-    )
+    if st.button("← Back to Consultation"):
+        st.session_state.current_page = "consultation"
+        st.rerun()
 
-    new_patient_age = st.number_input(
-        "Age",
-        min_value=0,
-        max_value=120,
-        value=0,
-        key="new_patient_age"
-    )
-
-    new_patient_gender = st.selectbox(
-        "Gender",
-        ["Select", "Female", "Male", "Other"],
-        key="new_patient_gender"
-    )
-
-    new_patient_village = st.text_input(
-        "Village / Area",
-        key="new_patient_village"
-    )
-
-    if st.button(
-        "💾 Save Patient",
-        key="save_new_patient"
-    ):
-
-        if (
-            not new_patient_id.strip()
-            or not new_patient_name.strip()
-        ):
-
-            st.warning(
-                "Please enter Patient ID and Patient Name."
-            )
-
-        else:
-
-            success, message = add_new_patient(
-                new_patient_id.strip(),
-                new_patient_name.strip(),
-                new_patient_age,
-                new_patient_gender,
-                new_patient_village.strip(),
-            )
-
-            if success:
-
-                st.success(
-                    "✅ Patient saved successfully!"
-                )
-
-            else:
-
-                st.error(message)
-
+    with st.expander("Patient Details", expanded=True):
+        
 # =========================================================
 # SEARCH EXISTING PATIENT
 # =========================================================
