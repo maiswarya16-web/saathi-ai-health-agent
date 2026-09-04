@@ -553,7 +553,235 @@ TOPICS = {
 }
 
 
+# =========================================================
+# PATIENT PAGE NAVIGATION
+# =========================================================
 
+if "current_page" not in st.session_state:
+    st.session_state.current_page = "consultation"
+
+
+# =========================================================
+# ADD NEW PATIENT PAGE
+# =========================================================
+
+if st.session_state.current_page == "add_patient":
+
+    st.title("➕ Add New Patient")
+
+    st.write("Enter the patient's details below.")
+
+    new_patient_id = st.text_input(
+        "Patient ID",
+        placeholder="Example: P001",
+        key="new_patient_id"
+    )
+
+    new_patient_name = st.text_input(
+        "Patient Name",
+        placeholder="Enter patient name",
+        key="new_patient_name"
+    )
+
+    new_patient_age = st.number_input(
+        "Patient Age",
+        min_value=0,
+        max_value=120,
+        value=0,
+        step=1,
+        key="new_patient_age"
+    )
+
+    new_patient_gender = st.selectbox(
+        "Patient Gender",
+        [
+            "Not specified",
+            "Female",
+            "Male",
+            "Other"
+        ],
+        key="new_patient_gender"
+    )
+
+    new_patient_village = st.text_input(
+        "Village / Area",
+        placeholder="Enter village or area",
+        key="new_patient_village"
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        if st.button(
+            "💾 Save Patient",
+            type="primary",
+            use_container_width=True,
+            key="save_new_patient"
+        ):
+
+            if not new_patient_id.strip():
+
+                st.warning("Please enter Patient ID.")
+
+            elif not new_patient_name.strip():
+
+                st.warning("Please enter Patient Name.")
+
+            else:
+
+                success, message = add_new_patient(
+                    new_patient_id.strip(),
+                    new_patient_name.strip(),
+                    new_patient_age,
+                    new_patient_gender,
+                    new_patient_village.strip()
+                )
+
+                if success:
+
+                    st.session_state.selected_patient = {
+                        "patient_id": new_patient_id.strip(),
+                        "patient_name": new_patient_name.strip(),
+                        "age": new_patient_age,
+                        "gender": new_patient_gender,
+                        "village": new_patient_village.strip(),
+                    }
+
+                    st.success("✅ Patient saved successfully!")
+
+                    st.session_state.current_page = "consultation"
+
+                    st.rerun()
+
+                else:
+
+                    st.error(f"❌ {message}")
+
+    with col2:
+
+        if st.button(
+            "⬅️ Back to Consultation",
+            use_container_width=True,
+            key="back_from_add_patient"
+        ):
+
+            st.session_state.current_page = "consultation"
+
+            st.rerun()
+
+    st.stop()
+
+
+# =========================================================
+# SEARCH EXISTING PATIENT PAGE
+# =========================================================
+
+if st.session_state.current_page == "search_patient":
+
+    st.title("🔍 Search Existing Patient")
+
+    st.write("Enter the Patient ID to find the patient.")
+
+    search_patient_id = st.text_input(
+        "Patient ID",
+        placeholder="Example: P001",
+        key="search_patient_id"
+    )
+
+    if st.button(
+        "🔍 Search Patient",
+        type="primary",
+        use_container_width=True,
+        key="search_patient_button"
+    ):
+
+        if not search_patient_id.strip():
+
+            st.warning("Please enter a Patient ID.")
+
+        else:
+
+            patient = get_patient_by_id(
+                search_patient_id.strip()
+            )
+
+            if patient:
+
+                st.session_state.found_patient = {
+                    "patient_id": patient[0],
+                    "patient_name": patient[1],
+                    "age": patient[2],
+                    "gender": patient[3],
+                    "village": patient[4],
+                }
+
+            else:
+
+                st.session_state.found_patient = None
+
+                st.error(
+                    "❌ No patient found with this Patient ID."
+                )
+
+    if "found_patient" in st.session_state:
+
+        found_patient = st.session_state.found_patient
+
+        if found_patient:
+
+            st.success("✅ Patient found!")
+
+            st.markdown("### 👤 Patient Details")
+
+            st.write(
+                f"**Patient ID:** {found_patient['patient_id']}"
+            )
+
+            st.write(
+                f"**Name:** {found_patient['patient_name']}"
+            )
+
+            st.write(
+                f"**Age:** {found_patient['age']}"
+            )
+
+            st.write(
+                f"**Gender:** {found_patient['gender']}"
+            )
+
+            st.write(
+                f"**Village / Area:** {found_patient['village']}"
+            )
+
+            if st.button(
+                "🩺 Use This Patient",
+                type="primary",
+                use_container_width=True,
+                key="use_found_patient"
+            ):
+
+                st.session_state.selected_patient = found_patient
+
+                st.session_state.current_page = "consultation"
+
+                st.session_state.found_patient = None
+
+                st.rerun()
+
+    if st.button(
+        "⬅️ Back to Consultation",
+        use_container_width=True,
+        key="back_from_search_patient"
+    ):
+
+        st.session_state.current_page = "consultation"
+
+        st.session_state.found_patient = None
+
+        st.rerun()
+
+    st.stop()
 # =========================================================
 # CONSULTATION DETAILS
 # =========================================================
