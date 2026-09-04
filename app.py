@@ -553,15 +553,6 @@ TOPICS = {
 }
 
 
-selected_topic_display = st.selectbox(
-    ui["topic"],
-    TOPICS[language],
-)
-
-topic_index = TOPICS[language].index(selected_topic_display)
-
-topic = TOPIC_KEYS[topic_index]
-
 # =========================================================
 # PATIENT REGISTRATION
 # =========================================================
@@ -785,6 +776,19 @@ patient_notes = st.text_area(
     ),
     height=100
 )
+
+# =========================================================
+# HEALTH TOPIC
+# =========================================================
+
+selected_topic_display = st.selectbox(
+    ui["topic"],
+    TOPICS[language],
+)
+
+topic_index = TOPICS[language].index(selected_topic_display)
+
+topic = TOPIC_KEYS[topic_index]
 # =========================================================
 # VOICE INPUT
 # =========================================================
