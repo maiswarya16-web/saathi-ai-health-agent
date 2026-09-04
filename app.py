@@ -588,8 +588,6 @@ if st.session_state.current_page == "add_patient":
     if st.button("← Back to Consultation"):
         st.session_state.current_page = "consultation"
         st.rerun()
-
-    with st.expander("Patient Details", expanded=True):
         
 # =========================================================
 # SEARCH EXISTING PATIENT
