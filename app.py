@@ -152,39 +152,32 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+.stApp {
+    background-color: #f7f9fc;
+}
 
-    /* Main background */
-    .stApp {
-        background: #f7f9fc;
-    }
+.saathi-header {
+    padding: 22px 25px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    color: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
 
-    /* Saathi header */
-    .saathi-header {
-        padding: 22px 25px;
-        border-radius: 18px;
-        margin-bottom: 25px;
-        background: linear-gradient(
-            135deg,
-            #0f766e,
-            #14b8a6
-        );
-        color: white;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    }
+.saathi-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
 
-    .saathi-title {
-        font-size: 32px;
-        font-weight: 800;
-        margin-bottom: 4px;
-    }
-
-    .saathi-subtitle {
-        font-size: 15px;
-        opacity: 0.95;
-    }
-
+.saathi-subtitle {
+    font-size: 15px;
+    opacity: 0.95;
+}
 </style>
-""")
+""", unsafe_allow_html=True)
+
 
 # =========================================================
 # SAATHI HEADER
@@ -192,7 +185,6 @@ st.markdown("""
 
 st.markdown("""
 <div class="saathi-header">
-
     <div class="saathi-title">
         🩺 Saathi AI
     </div>
@@ -200,7 +192,6 @@ st.markdown("""
     <div class="saathi-subtitle">
         AI Health Assistant for Frontline Health Workers
     </div>
-
 </div>
 """, unsafe_allow_html=True)
 
