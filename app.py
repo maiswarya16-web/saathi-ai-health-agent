@@ -575,7 +575,7 @@ if st.session_state.current_page == "add_patient":
         "Patient ID",
         placeholder="Example: P001",
         key="new_patient_id"
-    )
+    ).strip().upper()
 
     new_patient_name = st.text_input(
         "Patient Name",
