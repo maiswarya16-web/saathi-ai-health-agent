@@ -782,11 +782,7 @@ if st.session_state.current_page == "search_patient":
         st.rerun()
 
     st.stop()
-# =========================================================
-# CONSULTATION DETAILS
-# =========================================================
 
-st.subheader("🩺 Consultation Details")
 
 # =========================================================
 # PATIENT SELECTION
@@ -818,6 +814,12 @@ with col2:
 
         st.session_state.current_page = "search_patient"
         st.rerun()
+
+# =========================================================
+# CONSULTATION DETAILS
+# =========================================================
+
+st.subheader("🩺 Consultation Details")
 
 # ---------------------------------------------------------
 # USE SELECTED PATIENT DETAILS
