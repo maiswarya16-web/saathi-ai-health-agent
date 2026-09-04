@@ -788,6 +788,37 @@ if st.session_state.current_page == "search_patient":
 
 st.subheader("🩺 Consultation Details")
 
+# =========================================================
+# PATIENT SELECTION
+# =========================================================
+
+st.markdown("### 👤 Patient")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    if st.button(
+        "➕ Add New Patient",
+        use_container_width=True,
+        key="add_patient_button"
+    ):
+
+        st.session_state.current_page = "add_patient"
+        st.rerun()
+
+
+with col2:
+
+    if st.button(
+        "🔍 Search Existing Patient",
+        use_container_width=True,
+        key="search_patient_button"
+    ):
+
+        st.session_state.current_page = "search_patient"
+        st.rerun()
+
 # ---------------------------------------------------------
 # USE SELECTED PATIENT DETAILS
 # ---------------------------------------------------------
