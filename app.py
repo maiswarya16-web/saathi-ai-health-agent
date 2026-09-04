@@ -584,14 +584,6 @@ if add_patient_clicked:
 if search_patient_clicked:
     st.session_state.current_page = "search_patient"
     st.rerun()
-
-if st.session_state.current_page == "add_patient":
-
-    st.markdown("## ➕ Add New Patient")
-
-    if st.button("← Back to Consultation"):
-        st.session_state.current_page = "consultation"
-        st.rerun()
         
 # =========================================================
 # SEARCH EXISTING PATIENT
