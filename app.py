@@ -30,7 +30,7 @@ def get_patient_by_id(patient_id):
             village,
             created_at
         FROM patients
-        WHERE patient_id = ?
+        WHERE UPPER(patient_id) = UPPER(?)
         """,
         (patient_id,),
     )
