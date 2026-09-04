@@ -145,6 +145,13 @@ st.set_page_config(
     page_icon="🩺",
     layout="centered",
 )
+st.markdown("""
+<style>
+.stApp {
+    background-color: #f0f7f6;
+}
+</style>
+""", unsafe_allow_html=True)
 st.title("🩺 Saathi AI")
 st.caption("AI Health Assistant for Frontline Health Workers")
 
