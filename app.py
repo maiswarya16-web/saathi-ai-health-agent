@@ -557,7 +557,21 @@ TOPICS = {
 # PATIENT REGISTRATION
 # =========================================================
 
-st.markdown("## 👤 Patient Records")
+st.markdown("## 👤 Patient")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    add_patient_clicked = st.button(
+        "➕ Add New Patient",
+        use_container_width=True
+    )
+
+with col2:
+    search_patient_clicked = st.button(
+        "🔍 Search Existing Patient",
+        use_container_width=True
+    )
 
 with st.expander("➕ Add New Patient", expanded=False):
 
