@@ -835,7 +835,7 @@ if st.session_state.current_page == "search_patient":
 # PATIENT SELECTION
 # =========================================================
 
-st.markdown("### 👤 Patient")
+st.subheader("👤 Patient")
 
 col1, col2 = st.columns(2)
 
