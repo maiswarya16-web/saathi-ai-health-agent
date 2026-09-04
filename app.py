@@ -684,10 +684,10 @@ if st.session_state.current_page == "search_patient":
     st.write("Enter the Patient ID to find the patient.")
 
     search_patient_id = st.text_input(
-        "Patient ID",
-        placeholder="Example: P001",
-        key="search_patient_id"
-    )
+           "Patient ID",
+            placeholder="Example: P001",
+            key="search_patient_id"
+    ).strip().upper()
 
     if st.button(
         "🔍 Search Patient",
