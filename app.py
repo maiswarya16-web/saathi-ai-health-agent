@@ -552,27 +552,8 @@ TOPICS = {
     ],
 }
 
-# =========================================================
-# PATIENT PAGE NAVIGATION
-# =========================================================
-
-if "current_page" not in st.session_state:
-    st.session_state.current_page = "consultation"
-
-# ... YOUR NEW PATIENT NAVIGATION CODE ...
-
-if st.session_state.current_page == "search_patient":
-
-    # ... search code ...
-
-    st.stop()
 
 
-# =========================================================
-# CONSULTATION DETAILS
-# =========================================================
-
-st.subheader("🩺 Consultation Details")
 # =========================================================
 # CONSULTATION DETAILS
 # =========================================================
