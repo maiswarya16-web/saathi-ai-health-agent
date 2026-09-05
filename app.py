@@ -172,10 +172,10 @@ st.markdown("""
 # SAATHI HEADER
 # =========================================================
 
-st.title("🩺 Saathi AI")
+st.title("🩺 Saathi AI — Frontline Health Worker Assistant")
 
 st.caption(
-    "AI Health Assistant for Frontline Health Workers"
+    "AI-Powered Community Healthcare Support for ASHA & ANM Workers"
 )
 
 # =========================================================
