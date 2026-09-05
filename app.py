@@ -150,19 +150,11 @@ st.set_page_config(
 # SAATHI HEADER
 # =========================================================
 
-st.markdown("""
-<div class="saathi-header">
+st.title("🩺 Saathi AI")
 
-    <div class="saathi-title">
-        🩺 Saathi AI
-    </div>
-
-    <div class="saathi-subtitle">
-        AI Health Assistant for Frontline Health Workers
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
+st.caption(
+    "AI Health Assistant for Frontline Health Workers"
+)
 
 # =========================================================
 # GEMINI CONFIGURATION
