@@ -591,7 +591,8 @@ TOPICS = {
 
 if "current_page" not in st.session_state:
     st.session_state.current_page = "consultation"
-
+if "selected_patient" not in st.session_state:
+    st.session_state.selected_patient = None
 
 # =========================================================
 # ADD NEW PATIENT PAGE
