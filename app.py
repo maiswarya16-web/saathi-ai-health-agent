@@ -147,6 +147,28 @@ st.set_page_config(
 )
 
 # =========================================================
+# SAATHI DARK UI
+# =========================================================
+
+st.markdown("""
+<style>
+
+.stApp {
+    background-color: #0f172a;
+}
+
+[data-testid="stHeader"] {
+    background-color: #0f172a;
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: #0f172a;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
 # SAATHI HEADER
 # =========================================================
 
