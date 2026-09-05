@@ -155,7 +155,7 @@ st.caption("AI Health Assistant for Frontline Health Workers")
 st.markdown("""
 <style>
 .stApp {
-    background-color: #f7f9fc;
+    background-color: #0e1117;
 }
 
 .saathi-header {
