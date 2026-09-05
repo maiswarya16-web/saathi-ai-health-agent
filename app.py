@@ -875,12 +875,6 @@ if "selected_patient" in st.session_state:
     st.write(f"**Gender:** {patient_gender}")
     st.write(f"**Village / Area:** {selected_patient['village']}")
 
-else:
-
-    st.info(
-        "Select an existing patient or add a new patient."
-    )
-
     patient_id = st.text_input(
         "Patient ID",
         placeholder="Example: P001"
