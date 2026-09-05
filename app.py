@@ -180,19 +180,23 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
 # =========================================================
 # SAATHI HEADER
 # =========================================================
 
 st.markdown("""
 <div class="saathi-header">
+
     <div class="saathi-title">
         🩺 Saathi AI
     </div>
 
-""", unsafe_allow_html=True)
+    <div class="saathi-subtitle">
+        AI Health Assistant for Frontline Health Workers
+    </div>
 
+</div>
+""", unsafe_allow_html=True)
 # =========================================================
 # GEMINI CONFIGURATION
 # =========================================================
