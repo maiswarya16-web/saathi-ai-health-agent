@@ -370,7 +370,7 @@ ui = UI_TEXT[language]
 # TITLE
 # =========================================================
 
-st.subheader("Saathi AI Health Agent")
+st.subheader("🩺 Health Consultation")
 
 st.write(
     "A digital health assistant designed to support "
